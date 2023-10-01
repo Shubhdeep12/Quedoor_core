@@ -1,5 +1,6 @@
+import { mongodb_uri } from "../config";
+
 const mongoose = require('mongoose');
-import { mongodb_uri } from '../../config';
 
 let mongodb;
 const connectToMongoDB = async()=> {
@@ -9,7 +10,6 @@ const connectToMongoDB = async()=> {
     mongodb =  await mongoose.connect(mongodb_uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex: true,
     });
 
     console.log("Mongodb Database connected!");

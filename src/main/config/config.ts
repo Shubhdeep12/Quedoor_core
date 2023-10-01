@@ -5,13 +5,14 @@ import cookieParser from "cookie-parser";
 
 dotenv.config();
 export const port = Number(process.env.API_PORT);
-// export const db_host = String(process.env.DB_HOST);
-// export const db_port = Number(process.env.DB_PORT);
-// export const db_name = String(process.env.DB_NAME);
-// export const db_user = String(process.env.DB_USER);
-// export const db_password = String(process.env.DB_PASSWORD);
-// export const client_url = String(process.env.CLIENT_URL);
-// export const jwt_key = String(process.env.JWT_KEY);
+export const client_url = String(process.env.CLIENT_URL);
+export const jwt_key = String(process.env.JWT_KEY);
+export const db_host = String(process.env.DB_HOST);
+export const db_port = Number(process.env.DB_PORT);
+export const db_name = String(process.env.DB_NAME);
+export const db_user = String(process.env.DB_USER);
+export const db_password = String(process.env.DB_PASSWORD);
+export const mongodb_uri = String(process.env.MONGO_DB_LOCAL_URI);
 
 export default (app: Application, express: any) => {
   app.use((req, res, next) => {

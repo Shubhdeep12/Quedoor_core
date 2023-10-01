@@ -5,8 +5,8 @@ import { Request, Response } from "express";
 import createError from "../../shared/utils/httpError";
 import response from "../../shared/utils/response";
 
-import { AuthRequest } from "../entities/auth.entity";
-import User from "../../shared/database/models/users";
+import { AuthRequest } from "../../shared/entities/auth.entity";
+import User from "../models/users";
 
 export const getUser = async(req: Request, res: Response, next: Function) => {
   const userId = req.params?.userId;

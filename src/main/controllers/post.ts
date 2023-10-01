@@ -1,8 +1,8 @@
-// import { Response } from "express";
-// import moment from "moment";
-// import createError from "../../shared/utils/httpError.js";
-// import response from "../../shared/utils/response.js";
-// import { AuthRequest } from "../entities/auth.entity";
+import { Response } from "express";
+import response from "../../shared/utils/response";
+import { AuthRequest } from "../../shared/entities/auth.entity";
+// import Post from "../models/posts";
+import createError from "../../shared/utils/httpError";
 
 // export const getPosts = async (req: AuthRequest, res: Response, next: Function) => {
 //   const userId = req.query.userId;
@@ -42,14 +42,4 @@
 //   });
 // };
 
-// export const deletePost = (req: AuthRequest, res: Response) => {
-//   const userId = req.user?.id;
-//   const query = "DELETE FROM posts WHERE `id` = ? AND `userId` = ?";
 
-//   db.query(query, [req.params.id, userId], (err, data) => {
-//     if (err) return createError(500, err);
-//     if (data.affectedRows > 0)
-//       return response({ res, data, message: "Post deleted successfully" });
-//     return createError(403, "You can delete only your post");
-//   });
-// };

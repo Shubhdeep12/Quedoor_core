@@ -7,7 +7,7 @@ import { verifyUser } from "../middlewares/verifyToken";
 
 const router = express.Router();
 
-router.get("/find/:userId", getUser);
-router.put("/:userId", updateUser);
+router.get("/find/:userId", verifyUser, getUser);
+router.put("/:userId", verifyUser, updateUser);
 
 export default router;

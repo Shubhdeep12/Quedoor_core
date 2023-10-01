@@ -2,13 +2,18 @@ import * as dotenv from 'dotenv';
 import { Application } from 'express';
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import connectToMongoDB from '../shared/database/config/mongoose';
-import postgresConnection from '../shared/database/config/sequelize';
-
 dotenv.config();
 export const port = Number(process.env.API_PORT);
-export const client_url = String(process.env.CLIENT_URL);
-export const jwt_key = String(process.env.JWT_KEY);
+// export const client_url = String(process.env.CLIENT_URL);
+// export const jwt_key = String(process.env.JWT_KEY);
+
+export const db_host = String(process.env.DB_HOST);
+export const db_port = Number(process.env.DB_PORT);
+export const db_name = String(process.env.DB_NAME);
+export const db_user = String(process.env.DB_USER);
+export const db_password = String(process.env.DB_PASSWORD);
+
+export const mongodb_uri = String(process.env.MONGO_DB_LOCAL_URI);
 
 export default (app: Application, express: any) => {
   app.use((req, res, next) => {
@@ -24,15 +29,6 @@ export default (app: Application, express: any) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  (async () => {
-  
-      // Establish Sequelize, MongoDB, Neo4j, and Redis connections
-      const sequelize = await postgresConnection.authenticate();
-      // const mongoDB = await connectToMongoDB();
-      // const neo4jDriver = createNeo4jDriver();
-      // const redisClient = createRedisClient();
-  
-  })();
 
   // const storage = multer.diskStorage({
   //   destination: function (req, file, cb) {

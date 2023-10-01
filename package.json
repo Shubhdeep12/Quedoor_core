@@ -1,0 +1,20 @@
+{
+  "name": "quedoor_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "start:main-server": "cd src/main && nodemon index.ts",
+    "start:fanout-service": "cd src/services/fanout && nodemon index.ts",
+    "start:newsfeed-service": "cd src/services/newsfeed && nodemon index.ts",
+    "start:postpublish-service": "cd src/services/post-publish && nodemon index.ts",
+    "start": "concurrently \"npm:start:main-server\" \"npm:start:fanout-service\" \"npm:start:newsfeed-service\" \"npm:start:postpublish-service\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.1",
+    "nodemon": "^3.0.1"
+  }
+}

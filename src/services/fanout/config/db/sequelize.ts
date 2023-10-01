@@ -1,4 +1,4 @@
-import { db_host, db_port, db_name, db_user, db_password } from '../../config';
+import { db_host, db_port, db_name, db_user, db_password } from '../config';
 import { Sequelize } from 'sequelize';
 
 const postgresConnection= new Sequelize({

@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import response from "../../shared/utils/response";
 
 import createError from "../../shared/utils/httpError";
-import User from "../../shared/database/models/users";
+import User from "../models/users";
 
 export const register = async (req: Request, res: Response, next: Function) => {
   // CHECK USER IF EXIST

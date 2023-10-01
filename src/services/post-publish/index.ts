@@ -1,9 +1,13 @@
 import express, { Application } from "express";
-import config, { port } from "./config";
+import config, { port } from "./config/config";
+import router from "./routes";
+import connectDB from "./config/db/connectDB";
 
 const app: Application = express();
 config(app, express);
 
-// app.use("/api", router);
+connectDB();
 
-app.listen(port, () => console.log(`Server running on port ${port}`));
+app.use("/", router);
+
+app.listen(port || 3003, () => console.log(`Server running on port ${port}`));
