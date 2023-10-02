@@ -11,6 +11,6 @@ const getFollowing = async (userId: String, session: Session) => {
   } catch (error: any) {
     return new Error(error);
   }
-}
+};
 
 export default getFollowing;

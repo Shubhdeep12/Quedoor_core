@@ -9,6 +9,6 @@ config(app, express);
 
 connectDB();
 
-app.use("/api", router);
+app.use("/api/v1", router);
 
 app.listen(port, () => console.log(`Server running on port ${port}`));

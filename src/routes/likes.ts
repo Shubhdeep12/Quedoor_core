@@ -3,11 +3,10 @@ import express from "express";
 //   getUser,
 //   updateUser
 // } from "../controllers/user";
-import { verifyUser } from "../middlewares/verifyToken";
 
 const router = express.Router();
 
-// router.get("/find/:userId", verifyUser, getUser);
-// router.put("/:userId", verifyUser, updateUser);
+// router.get("/find/:userId", verifyToken, getUser);
+// router.put("/:userId", verifyToken, updateUser);
 
 export default router;

@@ -7,52 +7,61 @@ import response from "../utils/response";
 
 import createError from "../utils/httpError";
 import User from "../models/users";
+import { jwt_key } from "../config/config";
 
-export const register = async (req: Request, res: Response, next: Function) => {
+export const register = async (req: Request, res: Response) => {
   // CHECK USER IF EXIST
-  const sequelize = req.app.get('sequelize');
   let user: any;
+  if (!req.body.name || !req.body.email || !req.body.password) {
+    return response({res, status: 500, message: "Please enter name, email and password."});
+  }
   try {
     user = await User.findAll({where: {
       email: req.body.email
-    }})
+    }});
   } catch (error) {
-    next(createError(404, error))
+    createError(404, error);
+    return response({res, status: 404, message: 'Not able to register, Please try again!'});
   }
  
   if (user?.length) {
-    return response({ res, status: 409, message: "User already exists" });
+    return response({ res, status: 409, message: "User already exists." });
   }      
 
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+  const salt = bcrypt.genSaltSync(10);
+  const hashedPassword = bcrypt.hashSync(req.body.password, salt);
   try {
     await User.create({ email: req.body.email, password: hashedPassword, name: req.body.name });
   } catch (error) {
-    next(createError(500, error));
+    createError(500, error);
+    return response({res, status: 500, message: 'Not able to create user, Please try again!'});
   }
     
-  return response({ res, status: 201, message: "User has been created" });
+  return response({ res, status: 201, message: "User created successfully." });
 };
 
-export const logIn = async (req: Request, res: Response, next: Function) => {
-  const sequelize = req.app.get('sequelize');
+export const logIn = async (req: Request, res: Response) => {
   let user: any;
   try {
-    user = await User.findAll({where: {
-      email: req.body.email
-    }})
+    const users = await User.findAll({
+      where: {
+        email: req.body.email
+      }
+    });
+
+    if (users?.length === 0) {
+      return response({ res, status: 404, message: "User not found, Please try again!" });
+    }  
+
+    user = users[0].dataValues;
   } catch (error) {
-    next(createError(404, error))
-  }
- 
-  if (user?.length === 0) {
-    return response({ res, status: 404, message: "User not found." });
-  }      
+    createError(404, error);
+    return response({ res, status: 404, message: 'Not able to login, please try again!' });
+  }   
 
   const checkPassword = bcrypt.compareSync(
     req.body.password,
-    user[0].password
+    user.password
   );
 
   if (!checkPassword) {
@@ -60,17 +69,18 @@ export const logIn = async (req: Request, res: Response, next: Function) => {
     return response({
       res,
       status: 400,
-      message: "Wrong password or username!",
+      message: "Wrong password or username, Please try again!",
     });
   }
 
-  const token = jwt.sign({ id: user[0].id }, process.env.JWT_KEY as string);
+  const token = jwt.sign({ id: user.id }, jwt_key, { expiresIn: '365d' });
 
-  const { password, ...others } = user[0];
+  // eslint-disable-next-line no-unused-vars
+  const { password, ...others } = user;
   return response({
     res: res.cookie("accessToken", token, { httpOnly: true }),
-    message: "User has been logged in",
-    data: others,
+    message: "User logged in successfully.",
+    data: {...others, access_token: token},
   });
 
  

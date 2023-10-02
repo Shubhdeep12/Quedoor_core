@@ -26,6 +26,6 @@ const commentSchema = {
     type: Date,
     default: Date.now(),
   },
-}
+};
 
 export default commentSchema;

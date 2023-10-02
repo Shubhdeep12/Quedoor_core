@@ -1,4 +1,4 @@
-import {DataTypes} from 'sequelize'
+import {DataTypes} from 'sequelize';
 
 const UserSchema = {
   id: {
@@ -33,6 +33,6 @@ const UserSchema = {
   //   type: DataTypes.STRING(100),
   //   allowNull: true
   // }
-}
+};
 
 export default UserSchema;
