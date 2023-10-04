@@ -16,7 +16,7 @@ postCache.on('error', (err: any) => {
 
 const connectPostCache = async () => {
   postCache.connect();
-}
+};
 
 export const getPostCache = () =>{
   if (!postCache) {
@@ -24,7 +24,7 @@ export const getPostCache = () =>{
   }
 
   return postCache;
-}
+};
 
 
 export default connectPostCache;

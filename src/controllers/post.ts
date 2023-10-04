@@ -81,7 +81,7 @@ export const createPost = async (req: AuthRequest, res: Response) => {
     } 
 
     // TODO: to start a background job here - fanout
-    return response({ res, data:createdPost, status: 200, message: "Post created successfully" });
+    return response({ res, data:createdPost, status: 201, message: "Post created successfully" });
   } catch (error) {
     createError(500, error);
     return response({res, status: 500, message: "Unable to create Post!"});
@@ -119,17 +119,14 @@ export const deletePost = async (req: AuthRequest, res: Response) => {
     const postId = req.params.id;
 
     // Use the Post model to find and delete the post by ID
-    const deletedPost = await Post.findByIdAndDelete(postId);
+    const deletedPost = await Post.findByIdAndDelete({_id: postId, userId});
     if (!deletedPost) {
       createError(500, 'Post not found.');
       return response({res, status: 500, message: "Post not found."});
-    } else if (deletedPost.userId === userId) {
-      createError(404, 'You can delete only your post.');
-      return response({res, status: 404, message: "You can delete only your post."});
     }
 
     await Comment.deleteMany({ postId });
-    return response({ res, status: 200, message: "Post deleted successfully" });
+    return response({ res, status: 204, message: "Post deleted successfully" });
   } catch (error) {
     createError(500, error);
     return response({res, status: 500, message: String(error)});

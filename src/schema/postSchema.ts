@@ -19,6 +19,7 @@ const postSchema = {
     type: String,
     trim: true,
   },
+  reactions:[{type: String,}],
   comments: [
     {
       type: mongoose.Schema.Types.ObjectId,

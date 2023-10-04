@@ -10,3 +10,12 @@ Neo4j for Graph Data:
 
 Use Neo4j for handling graph data related to social connections, such as followers/following relationships, likes, comments, and any other graph-based interactions.
 Neo4j is designed specifically for graph data and can provide efficient graph traversal and querying capabilities.
+
+Redis for Cache
+
+
+Pending
+1. logger
+2. Rate limiting - 429
+3. Cache
+4. Dev and Prod mode

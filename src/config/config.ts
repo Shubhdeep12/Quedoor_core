@@ -9,19 +9,19 @@ export const client_url = String(process.env.CLIENT_URL);
 
 export const jwt_key = String(process.env.JWT_KEY);
 
-export const db_host = String(process.env.DB_HOST);
-export const db_port = Number(process.env.DB_PORT);
-export const db_name = String(process.env.DB_NAME);
-export const db_user = String(process.env.DB_USER);
+export const POSTGRES_HOST = String(process.env.POSTGRES_HOST);
+export const POSTGRES_PORT = Number(process.env.POSTGRES_PORT);
+export const POSTGRES_DB = String(process.env.POSTGRES_DB);
+export const POSTGRES_USER = String(process.env.POSTGRES_USER);
 
 export const neo4j_password = String(process.env.NEO4J_PASSWORD);
 export const neo4j_user = String(process.env.NEO4J_USERNAME);
 export const neo4j_uri = String(process.env.NEO4J_URI);
 
-export const db_password = String(process.env.DB_PASSWORD);
-export const mongodb_uri = String(process.env.MONGO_DB_LOCAL_URI);
+export const POSTGRES_PASSWORD = String(process.env.POSTGRES_PASSWORD);
+export const mongodb_uri = String(process.env.MONGO_DB_URI);
 
-export const redis_uri = String(process.env.REDIS_DEV);
+export const redis_uri = String(process.env.REDIS_URI);
 
 export default (app: Application, express: any) => {
   app.use((req, res, next) => {

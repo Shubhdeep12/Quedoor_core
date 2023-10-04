@@ -53,6 +53,7 @@ export const getComments = async (req: AuthRequest, res: Response) => {
 export const createComment = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
   const postId = req.params?.postId;
+  let createdComment;
   try {
     const commentData = {
       userId, postId,
@@ -61,7 +62,7 @@ export const createComment = async (req: AuthRequest, res: Response) => {
       description: req.body.description,
     };
 
-    const createdComment = await Comment.create(commentData);
+    createdComment = await Comment.create(commentData);
     if (!createdComment) {
       createError(500, 'Unable to create Comment!');
       return response({ res, status: 500, message: 'Unable to create Comment!' });
@@ -71,9 +72,13 @@ export const createComment = async (req: AuthRequest, res: Response) => {
       { safe: true, upsert: true });
 
     // TODO: to start a background job here - fanout
-    return response({ res, data:createdComment, status: 200, message: "Comment created successfully" });
+    return response({ res, data:createdComment, status: 201, message: "Comment created successfully" });
   } catch (error) {
     createError(500, error);
+    if (createdComment) {
+      // You may need to handle errors in the rollback process as well
+      await Comment.findByIdAndDelete(createdComment._id);
+    }
     return response({ res, status: 500, message: 'Unable to create Comment!' });
   }
 };
@@ -115,9 +120,9 @@ export const deleteComment = async (req: AuthRequest, res: Response) => {
       return response({res, status: 500, message: 'Comment not found. Please try again!'});
     }
 
-    await Post.findByIdAndUpdate(deletedComment.postId, { $pop: { comments: deletedComment._id } },
+    await Comment.findByIdAndUpdate(deletedComment.postId, { $pull: { comments: deletedComment._id } },
       { safe: true, upsert: true });
-    return response({ res, status: 200, message: "Comment deleted successfully" });
+    return response({ res, status: 204, message: "Comment deleted successfully" });
   } catch (error) {
     createError(500, error);
     return response({res, status: 500, message: String(error)});
