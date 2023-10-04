@@ -21,7 +21,6 @@ const verifyToken = (req: AuthRequest, res: Response, next: Function) => {
         createError(401, "Token is not valid!");
         return response({res, status:401, message: "Token is not valid!"});
       }
-      console.log({user});
       req.user = user;
       next();
     });
@@ -32,7 +31,7 @@ const verifyToken = (req: AuthRequest, res: Response, next: Function) => {
 };
 
 export default verifyToken;
-// export const verifyToken = (req: AuthRequest, res: Response, next: Function) => {
+// export const verifyToken = (req: AuthRequest, res: Response) => {
 //   try {
 //     verifyToken(req, res, () => {
 //       if (req.user?.id === req.params.userId) {

@@ -42,6 +42,9 @@ export const register = async (req: Request, res: Response) => {
 
 export const logIn = async (req: Request, res: Response) => {
   let user: any;
+  if (!req.body.email || !req.body.password) {
+    return response({res, status: 500, message: "Please enter email and password."});
+  }
   try {
     const users = await User.findAll({
       where: {
@@ -52,7 +55,6 @@ export const logIn = async (req: Request, res: Response) => {
     if (users?.length === 0) {
       return response({ res, status: 404, message: "User not found, Please try again!" });
     }  
-
     user = users[0].dataValues;
   } catch (error) {
     createError(404, error);
@@ -86,6 +88,7 @@ export const logIn = async (req: Request, res: Response) => {
  
 };
 
+// Blacklist tokens
 export const logOut = (req: Request, res: Response) => {
   response({
     res: res.clearCookie("accessToken", {

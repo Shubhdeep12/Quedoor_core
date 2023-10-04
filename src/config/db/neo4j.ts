@@ -4,7 +4,7 @@ const neo4j = require("neo4j-driver");
 let driver: any;
 
 export const createNeo4jConnection = async () => {
-  console.log('Connecting to neo4j')
+  console.log('Connecting to neo4j');
   driver = neo4j.driver(neo4j_uri, neo4j.auth.basic(neo4j_user, neo4j_password));
   driver.onCompleted = () => {
     console.log('Connected to Neo4j');
@@ -14,7 +14,7 @@ export const createNeo4jConnection = async () => {
     console.error('Neo4j connection error:', error);
   };
 
-  const session = driver.session()
+  const session = driver.session();
   try {
     // Run a simple query to trigger onCompleted event
     await session.run('RETURN 1');
@@ -22,15 +22,15 @@ export const createNeo4jConnection = async () => {
     console.log('Connected to Neo4j');
   } catch (error) {
     console.error('Neo4j connection error:', error);
-  }  finally {
+  } finally {
     session.close();
   }
-}
+};
 
 export const getNeo4jDriver = () =>{
   if (!driver) {
-    throw new Error('Neo4j driver not initialized. Call initializeNeo4jConnection first.');
+    throw new Error('Neo4j driver not initialized. Call createNeo4jConnection first.');
   }
 
   return driver;
-}
+};

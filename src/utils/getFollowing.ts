@@ -6,7 +6,7 @@ const getFollowing = async (userId: String, session: Session) => {
       'MATCH (follower:User {user_id: $userId})-[:FOLLOWS]->(following:User) RETURN following',
       { userId }
     );
-  
+    console.log(result);
     return result.records.map((record: any) => record.get('following').properties);
   } catch (error: any) {
     return new Error(error);

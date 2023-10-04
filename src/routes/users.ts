@@ -11,11 +11,11 @@ import verifyToken from "../middlewares/verifyToken";
 
 const router = express.Router();
 
-router.get("/find/:userId", verifyToken, getUser);
+router.get("/find/:userId", getUser);
 router.put("/:userId", verifyToken, updateUser);
 router.get('/:userId/followers', verifyToken, getAllFollowers);
 router.get('/:userId/following', verifyToken, getAllFollowing);
-router.post('/:userId/follow', verifyToken, follow);
-router.post('/:userId/unfollow', verifyToken, unfollow);
+router.post('/follow', verifyToken, follow);
+router.post('/unfollow', verifyToken, unfollow);
 
 export default router;
