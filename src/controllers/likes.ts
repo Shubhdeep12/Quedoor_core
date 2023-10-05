@@ -9,7 +9,8 @@ export const handleLike = async (req: AuthRequest, res: Response) => {
   const postId = req.params?.postId;
   const { like, dislike } = req.body;
   if (!postId && (like || dislike)) {
-    return response({res, status: 500, message: "Please add post id in request url"});
+    createError(500, "PostId or body missing.");
+    return response({res, status: 500, message: "PostId or body missing."});
   }
 
   try {
@@ -20,6 +21,7 @@ export const handleLike = async (req: AuthRequest, res: Response) => {
       // Remove a like from the post
       await Post.findByIdAndUpdate(postId, { $pull: { reactions: userId } });
     } else {
+      createError(400, "Invalid reaction. Provide like or dislike as true.");
       return response({res, status: 400, message: 'Invalid reaction. Provide like or dislike as true.' });
     }
   } catch (error) {

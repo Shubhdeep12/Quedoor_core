@@ -13,6 +13,7 @@ export const register = async (req: Request, res: Response) => {
   // CHECK USER IF EXIST
   let user: any;
   if (!req.body.name || !req.body.email || !req.body.password) {
+    createError(500, "Please enter name, email and password.");
     return response({res, status: 500, message: "Please enter name, email and password."});
   }
   try {
@@ -25,6 +26,7 @@ export const register = async (req: Request, res: Response) => {
   }
  
   if (user?.length) {
+    createError(409, "User already exists.");
     return response({ res, status: 409, message: "User already exists." });
   }      
 
@@ -36,13 +38,13 @@ export const register = async (req: Request, res: Response) => {
     createError(500, error);
     return response({res, status: 500, message: 'Not able to create user, Please try again!'});
   }
-    
   return response({ res, status: 201, message: "User created successfully." });
 };
 
 export const logIn = async (req: Request, res: Response) => {
   let user: any;
   if (!req.body.email || !req.body.password) {
+    createError(500, "Please enter email and password.");
     return response({res, status: 500, message: "Please enter email and password."});
   }
   try {
@@ -53,6 +55,7 @@ export const logIn = async (req: Request, res: Response) => {
     });
 
     if (users?.length === 0) {
+      createError(404, "User not found, Please try again!");
       return response({ res, status: 404, message: "User not found, Please try again!" });
     }  
     user = users[0].dataValues;
@@ -67,7 +70,7 @@ export const logIn = async (req: Request, res: Response) => {
   );
 
   if (!checkPassword) {
-    
+    createError(400, "Wrong password or username, Please try again!");
     return response({
       res,
       status: 400,

@@ -44,7 +44,6 @@ export const getComments = async (req: AuthRequest, res: Response) => {
 
 
   } catch (error) {
-    console.log({error});
     createError(500, "Internal Server Error");
     return response({res, status: 500, message: "Internal Server Error"});
   }

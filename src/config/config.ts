@@ -2,6 +2,8 @@ import * as dotenv from 'dotenv';
 import { Application } from 'express';
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import rateLimit from '../middlewares/rateLimit';
+import logger from '../middlewares/logger';
 
 dotenv.config();
 export const port = Number(process.env.API_PORT);
@@ -36,6 +38,15 @@ export default (app: Application, express: any) => {
   app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(rateLimit);
+
+  app.use((req, res, next) => {
+    // Log an info message for each incoming request
+    logger.info(`Received a ${req.method} request for ${req.url}`);
+    logger.info(JSON.stringify({ method: req.method, url: req.url, headers: req.headers, body: req.body }));
+
+    next();
+  });
 
   // const storage = multer.diskStorage({
   //   destination: function (req, file, cb) {

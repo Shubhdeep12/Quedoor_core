@@ -15,7 +15,9 @@ Redis for Cache
 
 
 Pending
-1. logger
-2. Rate limiting - 429
-3. Cache
-4. Dev and Prod mode
+1. logger - done
+2. Rate limiting - 429  - done
+3. Cache - set up done, working pending
+4. Dev and Prod mode - pending
+5. attachments - pending
+6. follow/unfollow not working - pending

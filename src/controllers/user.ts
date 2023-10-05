@@ -54,7 +54,9 @@ export const updateUser = async(req: AuthRequest, res: Response) => {
 
   if (result?.affectedRows > 0)
     return response({ res, status: 200, message: "User updated" });
-  return response({res, status: 403, message:"You can only update your own profile!"});
+  
+  createError(403, "You can only update your own profile!");
+  return response({res, status: 403, message: "You can only update your own profile!"});
 };
 
 export const getAllFollowers = async (req: AuthRequest, res: Response) => {
@@ -80,7 +82,6 @@ export const getAllFollowing = async (req: AuthRequest, res: Response) => {
 
   try {
     const following = await getFollowing(String(userId), session);
-    console.log(following);
     return response({ res, data: {success: true, result: following}, status: 200 });
   } catch (error) {
     createError(500, String(error));
@@ -104,7 +105,6 @@ export const follow = async (req: AuthRequest, res: Response) => {
       { followerId, followingId }
     );
     session.close();
-    console.log({result, followerId, followingId});
     return response({ res, data: { success: true, result: result.records } , status: 200 });
   } catch (error) {
     createError(500, String(error));

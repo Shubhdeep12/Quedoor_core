@@ -55,7 +55,6 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
 
 
   } catch (error) {
-    console.log({error});
     createError(500, "Internal Server Error.");
     return response({res, status: 500, message: 'Internal Server Error.'});
   }
@@ -64,6 +63,7 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
 export const createPost = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
   if (!req.body.description && req.body.attachments.length === 0) {
+    createError(500, "Please enter content or add image.");
     return response({res, status: 500, message: "Please enter content or add image."});
   }
   try {
