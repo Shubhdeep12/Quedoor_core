@@ -16,7 +16,7 @@ newsFeedCache.on('error', (err: any) => {
 
 const connectNewsFeedCache = async () => {
   newsFeedCache.connect();
-}
+};
 
 export const getNewsFeedCache = () =>{
   if (!newsFeedCache) {
@@ -24,7 +24,7 @@ export const getNewsFeedCache = () =>{
   }
 
   return newsFeedCache;
-}
+};
 
 
 export default connectNewsFeedCache;
