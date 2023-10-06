@@ -25,6 +25,10 @@ export const mongodb_uri = String(process.env.MONGO_DB_URI);
 
 export const redis_uri = String(process.env.REDIS_URI);
 
+export const cloud_name = String(process.env.CLOUDINARY_CLOUD_NAME);
+export const cloud_key = String(process.env.CLOUDINARY_CLOUD_API_KEY);
+export const cloud_secret = String(process.env.CLOUDINARY_CLOUD_API_SECRET);
+
 export default (app: Application, express: any) => {
   app.use((req, res, next) => {
     res.header("Access-Control-Allow-Credentials", "true");

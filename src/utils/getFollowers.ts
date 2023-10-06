@@ -8,8 +8,7 @@ const getFollowers = async (userId: Number) => {
       { userId }
     );
 
-    console.log({result});
-    return result.records.map((record: any) => record.get('follower').properties);
+    return result.records.map((record: any) => record.get('follower').properties.user_id.low);
   } catch (error: any) {
     throw new Error(error);
   } finally {

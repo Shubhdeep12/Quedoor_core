@@ -13,25 +13,26 @@ export const getUser = async(req: Request, res: Response) => {
   const userId = req.params?.userId;
   let user;
   try {
-    const users = await User.findAll({
+    user = await User.findOne({
       where:{
         id: userId
-      }
+      },
+      attributes: { exclude: ['password'] }, // Exclude the 'password' field
     });
-    if (users.length ===0) {
+    if (!user) {
       createError(404, 'Invalid User Id, Please try again!');
       return response({res, status: 404, message: 'Invalid User Id, Please try again!'});
     }
-    user = users[0].dataValues;
+   
   } catch (error) {
     createError(500, String(error));
     return response({res, status: 500, message: String(error)});
   }
   
   // eslint-disable-next-line no-unused-vars
-  const { password, ...info } = user;
+ 
     
-  return response({ res, data: info, message: "User fetched successfully" });
+  return response({ res, data: user, message: "User fetched successfully" });
 };
 
 export const updateUser = async(req: AuthRequest, res: Response) => {
@@ -63,11 +64,17 @@ export const updateUser = async(req: AuthRequest, res: Response) => {
 };
 
 export const getAllFollowers = async (req: AuthRequest, res: Response) => {
-  const userId = req.query.userId;
+  const userId = req.user?.id;
 
   try {
     const followers = await getFollowers(Number(userId));
-    return response({ res, data: { success: true, result: followers } , status: 200 });
+    const users = await User.findAll({
+      where: {
+        id: followers,
+      },
+      attributes: { exclude: ['password'] }, // Exclude the 'password' field
+    });
+    return response({ res, data: { success: true, result: users } , status: 200 });
   } catch (error) {
     createError(500, String(error));
     return response({ res, message: 'Internal Server error.' , status: 500 });
@@ -79,7 +86,13 @@ export const getAllFollowing = async (req: AuthRequest, res: Response) => {
 
   try {
     const following = await getFollowing(Number(userId));
-    return response({ res, data: {success: true, result: following}, status: 200 });
+    const users = await User.findAll({
+      where: {
+        id: following,
+      },
+      attributes: { exclude: ['password'] }, // Exclude the 'password' field
+    });
+    return response({ res, data: {success: true, result: users}, status: 200 });
   } catch (error) {
     createError(500, String(error));
     return response({ res, message: 'Internal Server error.' , status: 500 });

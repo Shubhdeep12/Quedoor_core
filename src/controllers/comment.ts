@@ -22,16 +22,16 @@ export const getComments = async (req: AuthRequest, res: Response) => {
         .skip(skip);
     
       for (const comment of result) {
-        const user = await User.findOne({ where: { id: comment.userId } });
-        if (user && user.dataValues) {
-            
-          // eslint-disable-next-line no-unused-vars
-          const { dataValues: { password, ...userInfo } } = user; // Exclude password from the response
-      
+        const user = await User.findOne({
+          where: { id: comment.userId },
+          attributes: { exclude: ['password'] }, // Exclude the 'password' field
+        });
+        if (user) {
+    
           commentsWithUserInfo.push(
             {
               ...comment._doc, // Include the original comment data
-              user: userInfo, // Include user information
+              user, // Include user information
             },
           );
         }

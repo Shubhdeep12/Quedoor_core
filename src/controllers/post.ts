@@ -1,28 +1,21 @@
 import { Response } from "express";
 
-import { getNeo4jDriver } from "../config/db/neo4j";
 import response from "../utils/response";
 import createError from "../utils/httpError";
 import Post from "../models/posts";
 import { AuthRequest } from "../entities/auth.entity";
 import User from "../models/users";
 import Comment from "../models/comment";
+import getFollowing from "../utils/getFollowing";
 
 export const getPosts = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
   const { limit = 10, page = 1 }: any = req.query;
-  const session = getNeo4jDriver().session();
   try {
     const skip = (page - 1) * limit;
 
-    
-    const followingUserIds = await session.run(
-      'MATCH (follower:User {user_id: $userId})-[:FOLLOWS]->(following:User) RETURN following',
-      { userId }
-    );
-
-    
-    const filter = { userId: { $in: [userId, ...(followingUserIds?.records || [])] } };
+    const followers = await getFollowing(Number(userId));
+    const filter = { userId: { $in: [userId, ...(followers || [])] } };
 
     const [posts, totalRecords] = await Promise.all([
       Post.find(filter)
@@ -34,16 +27,16 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
     
     const postsWithUserInfo = [];
     for (const post of posts) {
-      const user = await User.findOne({ where: { id: post.userId } });
-      if (user && user.dataValues) {
-          
-        // eslint-disable-next-line no-unused-vars
-        const { dataValues: { password, ...userInfo } } = user;
+      const user = await User.findOne({
+        where: { id: post.userId },
+        attributes: { exclude: ['password'] }, // Exclude the 'password' field
+      });
+      if (user) {
     
         postsWithUserInfo.push(
           {
             ...post._doc, // Include the original post data
-            user: userInfo, // Include user information
+            user, // Include user information
           },
         );
       }
@@ -55,8 +48,8 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
 
 
   } catch (error) {
-    createError(500, "Internal Server Error.");
-    return response({res, status: 500, message: 'Internal Server Error.'});
+    createError(500, String(error));
+    return response({res, status: 500, message: String(error)});
   }
 };
 

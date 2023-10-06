@@ -9,6 +9,7 @@ import createError from "../utils/httpError";
 import User from "../models/users";
 import { jwt_key } from "../config/config";
 import { getNeo4jDriver } from "../config/db/neo4j";
+import { AuthRequest } from "../entities/auth.entity";
 
 export const register = async (req: Request, res: Response) => {
   // CHECK USER IF EXIST
@@ -101,7 +102,7 @@ export const logIn = async (req: Request, res: Response) => {
 };
 
 // Blacklist tokens
-export const logOut = (req: Request, res: Response) => {
+export const logOut = (req: AuthRequest, res: Response) => {
   response({
     res: res.clearCookie("accessToken", {
       secure: true,

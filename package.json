@@ -15,6 +15,7 @@
   "dependencies": {
     "@neo4j/graphql-ogm": "^4.2.0",
     "bcrypt": "^5.1.1",
+    "cloudinary": "^1.41.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -23,11 +24,13 @@
     "graphql": "^16.8.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.5.2",
+    "multer": "^1.4.5-lts.1",
     "neo4j-driver": "^5.13.0",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
     "redis": "^4.6.10",
     "sequelize": "^6.33.0",
+    "tesseract.js": "^5.0.2",
     "winston": "^3.10.0"
   },
   "devDependencies": {
@@ -36,6 +39,7 @@
     "@types/cors": "^2.8.14",
     "@types/express": "^4.17.17",
     "@types/jsonwebtoken": "^9.0.3",
+    "@types/multer": "^1.4.8",
     "@types/node": "^20.6.2",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
