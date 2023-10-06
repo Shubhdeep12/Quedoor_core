@@ -16,7 +16,7 @@ userCache.on('error', (err: any) => {
 
 const connectUserCache = async () => {
   userCache.connect();
-}
+};
 
 export const getUserCache = () =>{
   if (!userCache) {
@@ -24,7 +24,7 @@ export const getUserCache = () =>{
   }
 
   return userCache;
-}
+};
 
 
 export default connectUserCache;

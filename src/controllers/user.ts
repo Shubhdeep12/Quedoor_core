@@ -3,9 +3,11 @@ import createError from "../utils/httpError";
 import response from "../utils/response";
 import { AuthRequest } from "../entities/auth.entity";
 import User from "../models/users";
-import { getNeo4jDriver } from "../config/db/neo4j";
 import getFollowers from "../utils/getFollowers";
 import getFollowing from "../utils/getFollowing";
+import followUser from "../utils/follow";
+import unfollowUser from "../utils/unfollow";
+// import { getNeo4jDriver } from "../config/db/neo4j";
 
 export const getUser = async(req: Request, res: Response) => {
   const userId = req.params?.userId;
@@ -28,6 +30,7 @@ export const getUser = async(req: Request, res: Response) => {
   
   // eslint-disable-next-line no-unused-vars
   const { password, ...info } = user;
+    
   return response({ res, data: info, message: "User fetched successfully" });
 };
 
@@ -62,50 +65,36 @@ export const updateUser = async(req: AuthRequest, res: Response) => {
 export const getAllFollowers = async (req: AuthRequest, res: Response) => {
   const userId = req.query.userId;
 
-  const session = getNeo4jDriver().session();
-
   try {
-    const followers = await getFollowers(String(userId), session);
+    const followers = await getFollowers(Number(userId));
     return response({ res, data: { success: true, result: followers } , status: 200 });
   } catch (error) {
     createError(500, String(error));
     return response({ res, message: 'Internal Server error.' , status: 500 });
-  } finally {
-    session.close();
   }
 };
 
 export const getAllFollowing = async (req: AuthRequest, res: Response) => {
   const { userId } = req.params;
 
-  const session = getNeo4jDriver().session();
-
   try {
-    const following = await getFollowing(String(userId), session);
+    const following = await getFollowing(Number(userId));
     return response({ res, data: {success: true, result: following}, status: 200 });
   } catch (error) {
     createError(500, String(error));
     return response({ res, message: 'Internal Server error.' , status: 500 });
-  } finally {
-    session.close();
   }
 };
 
 export const follow = async (req: AuthRequest, res: Response) => {
   const { followerId, followingId } = req.body;
 
-  const session = getNeo4jDriver().session();
-
   try {
     // Create a relationship in Neo4j
-    const result = await session.run(
-      'MATCH (follower:User {user_id: $followerId}), (following:User {user_id: $followingId}) ' +
-      'CREATE (follower)-[:FOLLOWS]->(following) ' +
-      'RETURN follower, following',
-      { followerId, followingId }
-    );
-    session.close();
-    return response({ res, data: { success: true, result: result.records } , status: 200 });
+    const result = await followUser(Number(followerId), Number(followingId));
+    console.log({ result });
+    
+    return response({ res, data: { success: true, result } , status: 200 });
   } catch (error) {
     createError(500, String(error));
     return response({ res, message: 'Internal Server error.' , status: 500 });
@@ -115,18 +104,10 @@ export const follow = async (req: AuthRequest, res: Response) => {
 export const unfollow = async (req: AuthRequest, res: Response) => {
   const { followerId, followingId } = req.body;
 
-  const session = getNeo4jDriver().session();
-
   try {
     // Delete the relationship in Neo4j
-    const result = await session.run(
-      'MATCH (follower:User {user_id: $followerId})-[rel:FOLLOWS]->(following:User {user_id: $followingId}) ' +
-      'DELETE rel ' +
-      'RETURN follower, following',
-      { followerId, followingId }
-    );
-    session.close();
-    return response({ res, data: { success: true, result: result.records } , status: 200 });
+    const result = await unfollowUser(Number(followerId), Number(followingId));
+    return response({ res, data: { success: true, result } , status: 200 });
   } catch (error) {
     createError(500, String(error));
     return response({ res, message: 'Internal Server error.' , status: 500 });

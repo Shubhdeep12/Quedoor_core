@@ -1,15 +1,18 @@
-import { Session } from "neo4j-driver";
+import { getNeo4jDriver } from "../config/db/neo4j";
 
-const getFollowing = async (userId: String, session: Session) => {
+const getFollowing = async (userId: Number) => {
+  const session = getNeo4jDriver().session();
   try {
     const result = await session.run(
       'MATCH (follower:User {user_id: $userId})-[:FOLLOWS]->(following:User) RETURN following',
       { userId }
     );
-    console.log(result);
+    console.log({result});
     return result.records.map((record: any) => record.get('following').properties);
   } catch (error: any) {
-    return new Error(error);
+    throw new Error(error);
+  } finally {
+    session.close();
   }
 };
 

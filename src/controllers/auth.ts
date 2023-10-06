@@ -8,6 +8,7 @@ import response from "../utils/response";
 import createError from "../utils/httpError";
 import User from "../models/users";
 import { jwt_key } from "../config/config";
+import { getNeo4jDriver } from "../config/db/neo4j";
 
 export const register = async (req: Request, res: Response) => {
   // CHECK USER IF EXIST
@@ -32,8 +33,16 @@ export const register = async (req: Request, res: Response) => {
 
   const salt = bcrypt.genSaltSync(10);
   const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+  let newUser: any;
   try {
-    await User.create({ email: req.body.email, password: hashedPassword, name: req.body.name });
+    newUser = await User.create({ email: req.body.email, password: hashedPassword, name: req.body.name });
+    if (newUser && newUser.length > 0) {
+      const userId = newUser.dataValues.id;
+      const session = getNeo4jDriver().session();
+      await session.run(
+        `CREATE (user:User { user_id: ${userId}})`
+      );
+    }
   } catch (error) {
     createError(500, error);
     return response({res, status: 500, message: 'Not able to create user, Please try again!'});
