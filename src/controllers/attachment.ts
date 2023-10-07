@@ -8,6 +8,7 @@ import deleteFile from "../utils/deleteFile";
 
 
 export const uploadAttachment = async (req: AuthRequest, res: Response) => {
+  const { with_image_text = "true" } = req.body;
   try {
     // Check file size
     const fileSizeLimit = 10 * 1024 * 1024; // 10MB
@@ -26,7 +27,8 @@ export const uploadAttachment = async (req: AuthRequest, res: Response) => {
     // Upload image to Cloudinary
     const result = await uploadFile(req.file.buffer);
 
-    const imageText = await getImageText(result.secure_url);
+    let imageText: String = "";
+    if(with_image_text === 'true') imageText = await getImageText(result.secure_url);
     // console.log(imageText);
   
     return response({ res, data: { imageUrl: result.secure_url, imageText } });

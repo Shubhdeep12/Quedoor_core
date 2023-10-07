@@ -63,7 +63,7 @@ export const createPost = async (req: AuthRequest, res: Response) => {
       image_text: req.body.image_text,
       rich_description: req.body.rich_description,
       description: req.body.description,
-      comments: req.body.comments
+      comments: []
     };
 
     const createdPost = await Post.create(postData);

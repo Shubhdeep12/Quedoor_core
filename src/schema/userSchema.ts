@@ -26,13 +26,6 @@ const UserSchema = {
   profileImg: {
     type: DataTypes.STRING
   },
-  coverImg: {
-    type: DataTypes.STRING
-  }
-  // country: {
-  //   type: DataTypes.STRING(100),
-  //   allowNull: true
-  // }
 };
 
 export default UserSchema;
