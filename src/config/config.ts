@@ -9,7 +9,7 @@ import logger from '../middlewares/logger';
 dotenv.config();
 
 export const node_env = String(process.env.NODE_ENV);
-export const port = Number(process.env.API_PORT);
+export const port = Number(process.env.PORT || 4000);
 export const client_url = String(process.env.CLIENT_URL);
 
 export const jwt_key = String(process.env.JWT_KEY);
