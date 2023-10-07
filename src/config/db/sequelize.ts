@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 import fs from 'fs';
 
-import { postgres_db, postgres_host, postgres_password, postgres_port, postgres_user } from '../config';
+import { node_env, postgres_db, postgres_host, postgres_password, postgres_port, postgres_user } from '../config';
 
 const postgresConnection= new Sequelize({
   dialect: "postgres",
@@ -10,12 +10,12 @@ const postgresConnection= new Sequelize({
   database: postgres_db,
   username: postgres_user,
   password: postgres_password,
-  dialectOptions: {
+  ...(node_env === 'production' ? {dialectOptions: {
     ssl: {
       rejectUnauthorized: true,
       ca: fs.readFileSync('./ca.pem').toString()
     },
-  }
+  }} : {})
 });
 
 export default postgresConnection;
