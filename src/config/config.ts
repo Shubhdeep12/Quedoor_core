@@ -13,16 +13,16 @@ export const client_url = String(process.env.CLIENT_URL);
 
 export const jwt_key = String(process.env.JWT_KEY);
 
-export const POSTGRES_HOST = String(process.env.POSTGRES_HOST);
-export const POSTGRES_PORT = Number(process.env.POSTGRES_PORT);
-export const POSTGRES_DB = String(process.env.POSTGRES_DB);
-export const POSTGRES_USER = String(process.env.POSTGRES_USER);
+export const postgres_host = String(process.env.POSTGRES_HOST);
+export const postgres_port = Number(process.env.POSTGRES_PORT);
+export const postgres_db = String(process.env.POSTGRES_DB);
+export const postgres_user = String(process.env.POSTGRES_USER);
+export const postgres_password = String(process.env.POSTGRES_PASSWORD);
 
 export const neo4j_password = String(process.env.NEO4J_PASSWORD);
 export const neo4j_user = String(process.env.NEO4J_USERNAME);
 export const neo4j_uri = String(process.env.NEO4J_URI);
 
-export const POSTGRES_PASSWORD = String(process.env.POSTGRES_PASSWORD);
 export const mongodb_uri = String(process.env.MONGO_DB_URI);
 
 export const redis_uri = String(process.env.REDIS_URI);

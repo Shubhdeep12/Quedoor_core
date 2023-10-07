@@ -1,14 +1,21 @@
 import { Sequelize } from 'sequelize';
+import fs from 'fs';
 
-import { POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD } from '../config';
+import { postgres_db, postgres_host, postgres_password, postgres_port, postgres_user } from '../config';
 
 const postgresConnection= new Sequelize({
   dialect: "postgres",
-  host: POSTGRES_HOST,
-  port: POSTGRES_PORT,
-  database: POSTGRES_DB,
-  username: POSTGRES_USER,
-  password: POSTGRES_PASSWORD
+  host: postgres_host,
+  port: postgres_port,
+  database: postgres_db,
+  username: postgres_user,
+  password: postgres_password,
+  dialectOptions: {
+    ssl: {
+      rejectUnauthorized: true,
+      ca: fs.readFileSync('./ca.pem').toString()
+    },
+  }
 });
 
 export default postgresConnection;
