@@ -1,5 +1,6 @@
-import { POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD } from '../config';
 import { Sequelize } from 'sequelize';
+
+import { POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD } from '../config';
 
 const postgresConnection= new Sequelize({
   dialect: "postgres",

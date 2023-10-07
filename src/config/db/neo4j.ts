@@ -1,6 +1,7 @@
+const neo4j = require("neo4j-driver");
+
 import { neo4j_password, neo4j_uri, neo4j_user } from "../config";
 
-const neo4j = require("neo4j-driver");
 let driver: any;
 
 export const createNeo4jConnection = async () => {
@@ -16,7 +17,6 @@ export const createNeo4jConnection = async () => {
 
   const session = driver.session();
   try {
-    // Run a simple query to trigger onCompleted event
     await session.run('RETURN 1');
 
     console.log('Connected to Neo4j');

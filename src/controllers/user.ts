@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
-import createError from "../utils/httpError";
-import response from "../utils/response";
+
 import { AuthRequest } from "../entities/auth.entity";
+
 import User from "../models/users";
+
 import getFollowers from "../utils/getFollowers";
 import getFollowing from "../utils/getFollowing";
+import createError from "../utils/httpError";
+import response from "../utils/response";
 import followUser from "../utils/follow";
 import unfollowUser from "../utils/unfollow";
-// import { getNeo4jDriver } from "../config/db/neo4j";
 
 export const getUser = async(req: Request, res: Response) => {
   const userId = req.params?.userId;
@@ -47,8 +49,8 @@ export const updateUser = async(req: AuthRequest, res: Response) => {
       name: req.body.name,
       city: req.body.city,
       website: req.body.website,
-      profileImg: req.body.profileImg,
-      coverImg: req.body.coverImg,
+      profileImg: req.body.profile_img,
+      coverImg: req.body.cover_img,
     }, { where: { id: userId } });
     
   } catch (error) {
@@ -100,11 +102,14 @@ export const getAllFollowing = async (req: AuthRequest, res: Response) => {
 };
 
 export const follow = async (req: AuthRequest, res: Response) => {
-  const { followerId, followingId } = req.body;
-
+  const { follower_id, following_id } = req.body;
+  if (!follower_id || !following_id) {
+    createError(500, "FollowerId or followingId is missing.");
+    return response({res, status: 500, message: "FollowerId or followingId is missing."});
+  }
   try {
     // Create a relationship in Neo4j
-    const result = await followUser(Number(followerId), Number(followingId));
+    const result = await followUser(Number(follower_id), Number(following_id));
     console.log({ result });
     
     return response({ res, data: { success: true, result } , status: 200 });
@@ -115,11 +120,14 @@ export const follow = async (req: AuthRequest, res: Response) => {
 };
 
 export const unfollow = async (req: AuthRequest, res: Response) => {
-  const { followerId, followingId } = req.body;
-
+  const { follower_id, following_id } = req.body;
+  if (!follower_id || !following_id) {
+    createError(500, "FollowerId or followingId is missing.");
+    return response({res, status: 500, message: "FollowerId or followingId is missing."});
+  }
   try {
     // Delete the relationship in Neo4j
-    const result = await unfollowUser(Number(followerId), Number(followingId));
+    const result = await unfollowUser(Number(follower_id), Number(following_id));
     return response({ res, data: { success: true, result } , status: 200 });
   } catch (error) {
     createError(500, String(error));

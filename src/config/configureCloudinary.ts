@@ -1,5 +1,5 @@
-// cloudinaryConfig.ts
 import { v2 as cloudinary } from 'cloudinary';
+
 import { cloud_key, cloud_name, cloud_secret } from './config';
 
 const configureCloudinary = () => {

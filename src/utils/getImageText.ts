@@ -1,4 +1,5 @@
 import { createWorker } from 'tesseract.js';
+
 import logger from '../middlewares/logger';
 
 const getImageText = async (imageUrl: String) => {

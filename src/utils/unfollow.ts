@@ -27,9 +27,9 @@ const unfollowUser = async (followerId: Number, followingId: Number) => {
     logger.info('Relationship deleted successfully:', followerNode.properties, followingNode.properties);
   } catch (error: any) {
     if (error.message.includes('Relationship does not exist')) {
-      throw new Error('Error: Relationship does not exist between the users');
+      throw new Error('Relationship does not exist between the users');
     } else if (error.message.includes('Node not found')) {
-      throw new Error('Error: One or both users do not exist');
+      throw new Error('One or both users do not exist');
     } else {
       throw new Error('Error:', error.message);
     }

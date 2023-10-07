@@ -12,6 +12,7 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
   const { limit = 10, page = 1 }: any = req.query;
   try {
+    // TODO: to have newsfeed cache here instead of this.
     const skip = (page - 1) * limit;
 
     const followers = await getFollowing(Number(userId));
@@ -29,24 +30,20 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
     for (const post of posts) {
       const user = await User.findOne({
         where: { id: post.userId },
-        attributes: { exclude: ['password'] }, // Exclude the 'password' field
+        attributes: { exclude: ['password'] },
       });
       if (user) {
     
         postsWithUserInfo.push(
           {
-            ...post._doc, // Include the original post data
-            user, // Include user information
+            ...post._doc,
+            user,
           },
         );
       }
     }
-
     const responseData = {data: postsWithUserInfo, page, limit, totalRecords };
-
     response({ res, status: 200, data: responseData });
-
-
   } catch (error) {
     createError(500, String(error));
     return response({res, status: 500, message: String(error)});
@@ -55,13 +52,15 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
 
 export const createPost = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
-  if (!req.body.description && req.body.attachments.length === 0) {
+  if (!req.body.description && !req.body.image_url) {
     createError(500, "Please enter content or add image.");
     return response({res, status: 500, message: "Please enter content or add image."});
   }
   try {
     const postData = {
-      userId, attachments: req.body.attachments,
+      userId,
+      image_url: req.body.image_url,
+      image_text: req.body.image_text,
       rich_description: req.body.rich_description,
       description: req.body.description,
       comments: req.body.comments
@@ -83,11 +82,16 @@ export const createPost = async (req: AuthRequest, res: Response) => {
 
 export const updatePost = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
+  if (!req.body.description && !req.body.image_url && !req.body.comments) {
+    createError(500, "Please enter some updated content in body.");
+    return response({res, status: 500, message: "Please enter some updated content in body."});
+  }
   try {
     const postId = req.params.id;
 
     const updatedData = {
-      userId, attachments: req.body.attachments,
+      image_url: req.body.image_url,
+      image_text: req.body.image_text,
       rich_description: req.body.rich_description,
       description: req.body.description,
       comments: req.body.comments
