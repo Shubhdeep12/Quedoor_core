@@ -1,6 +1,8 @@
 import express, { Application } from "express";
-import config from "./config/config";
+
 import router from "./routes";
+
+import config from "./config/config";
 import { port } from './config/config';
 import connectDB from "./config/db/connectDB";
 import configureCloudinary from "./config/configureCloudinary";

@@ -19,5 +19,5 @@ Pending
 2. Rate limiting - 429  - done
 3. Cache - set up done, working pending
 4. Dev and Prod mode - pending
-5. attachments - pending
+5. attachments - done
 6. follow/unfollow not working - done

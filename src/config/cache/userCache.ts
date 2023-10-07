@@ -1,4 +1,5 @@
 const redis = require('redis');
+
 import { redis_uri } from '../config';
 
 const userCache = redis.createClient({

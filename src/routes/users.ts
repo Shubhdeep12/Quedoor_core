@@ -11,7 +11,7 @@ import verifyToken from "../middlewares/verifyToken";
 
 const router = express.Router();
 
-router.get("/find/:userId", getUser);
+router.get("/find/:userId", verifyToken, getUser);
 router.put("/:userId", verifyToken, updateUser);
 router.get('/:userId/followers', verifyToken, getAllFollowers);
 router.get('/:userId/following', verifyToken, getAllFollowing);

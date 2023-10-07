@@ -8,7 +8,7 @@ export const handleLike = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
   const postId = req.params?.postId;
   const { like, dislike } = req.body;
-  if (!postId && (like || dislike)) {
+  if (!postId && !(like || dislike)) {
     createError(500, "PostId or body missing.");
     return response({res, status: 500, message: "PostId or body missing."});
   }

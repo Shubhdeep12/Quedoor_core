@@ -2,10 +2,12 @@ import * as dotenv from 'dotenv';
 import { Application } from 'express';
 import cors from "cors";
 import cookieParser from "cookie-parser";
+
 import rateLimit from '../middlewares/rateLimit';
 import logger from '../middlewares/logger';
 
 dotenv.config();
+
 export const port = Number(process.env.API_PORT);
 export const client_url = String(process.env.CLIENT_URL);
 
@@ -52,19 +54,4 @@ export default (app: Application, express: any) => {
     next();
   });
 
-  // const storage = multer.diskStorage({
-  //   destination: function (req, file, cb) {
-  //     cb(null, "../client/public/upload");
-  //   },
-  //   filename: function (req, file, cb) {
-  //     cb(null, Date.now() + file.originalname);
-  //   },
-  // });
-
-  // const upload = multer({ storage: storage });
-
-  // app.post("/api/upload", upload.single("file"), (req, res) => {
-  //   const file = req.file;
-  //   res.status(200).json(file?.filename);
-  // });
 };

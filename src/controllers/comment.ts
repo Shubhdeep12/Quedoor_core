@@ -24,39 +24,39 @@ export const getComments = async (req: AuthRequest, res: Response) => {
       for (const comment of result) {
         const user = await User.findOne({
           where: { id: comment.userId },
-          attributes: { exclude: ['password'] }, // Exclude the 'password' field
+          attributes: { exclude: ['password'] }, 
         });
         if (user) {
-    
           commentsWithUserInfo.push(
             {
-              ...comment._doc, // Include the original comment data
-              user, // Include user information
+              ...comment._doc, 
+              user, 
             },
           );
         }
       }
     }
-
     const responseData = {data : commentsWithUserInfo, page,limit,totalRecords: comments.length};
-
     return response({ res, status: 200, data: responseData });
-
-
   } catch (error) {
-    createError(500, "Internal Server Error");
-    return response({res, status: 500, message: "Internal Server Error"});
+    createError(500, String(error));
+    return response({res, status: 500, message: String(error)});
   }
 };
 
 export const createComment = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
   const postId = req.params?.postId;
+  if (!req.body.description && !req.body.image_url) {
+    createError(500, "Please enter content or add image.");
+    return response({res, status: 500, message: "Please enter content or add image."});
+  }
   let createdComment;
   try {
     const commentData = {
       userId, postId,
-      attachments: req.body.attachments,
+      image_url: req.body.image_url,
+      image_text: req.body.image_text,
       rich_description: req.body.rich_description,
       description: req.body.description,
     };
@@ -84,11 +84,16 @@ export const createComment = async (req: AuthRequest, res: Response) => {
 
 export const updateComment = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
+  if (!req.body.description && !req.body.image_url) {
+    createError(500, "Please enter some updated content in body.");
+    return response({res, status: 500, message: "Please enter some updated content in body."});
+  }
   try {
     const commentId = req.params.id;
 
     const updatedData = {
-      attachments: req.body.attachments,
+      image_url: req.body.image_url,
+      image_text: req.body.image_text,
       rich_description: req.body.rich_description,
       description: req.body.description,
     };

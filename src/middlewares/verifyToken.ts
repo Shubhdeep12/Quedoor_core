@@ -1,10 +1,12 @@
 import jwt from "jsonwebtoken";
-import createError from "../utils/httpError";
 import * as dotenv from "dotenv";
 import { Response } from "express";
+
 import { jwt_key } from "../config/config";
+
 import { AuthRequest } from "../entities/auth.entity";
 import response from "../utils/response";
+import createError from "../utils/httpError";
 
 dotenv.config();
 

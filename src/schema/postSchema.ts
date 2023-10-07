@@ -6,7 +6,7 @@ const postSchema = {
     required: true,
     trim: true,
   },
-  attachments: [{ type: String }],
+  image_url:{ type: String },
   description: {
     type: String,
     trim: true,
@@ -15,7 +15,7 @@ const postSchema = {
     type: String,
     trim: true,
   },
-  imageText: {
+  image_text: {
     type: String,
     trim: true,
   },

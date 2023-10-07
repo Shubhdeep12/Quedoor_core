@@ -9,7 +9,7 @@ const commentSchema = {
     type: String,
     required: true
   },
-  attachments: [{ type: String }],
+  image_url: { type: String },
   description: {
     type: String,
     trim: true,
@@ -18,7 +18,7 @@ const commentSchema = {
     type: String,
     trim: true,
   },
-  imageText: {
+  image_text: {
     type: String,
     trim: true,
   },
