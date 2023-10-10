@@ -1,6 +1,6 @@
 <p align="center">
 <a href="https://shubhdeepchhabra.in">
-    <img width="200" alt="Quedoor logo" src="https://github.com/Shubhdeep12/Quedoor_backend/assets/43654389/1758e50b-a189-4888-9927-5d5ef6dcb6a7">
+    <img width="200" alt="Quedoor logo" src="https://github.com/Shubhdeep12/Quedoor_backend/assets/43654389/18d6d505-6cac-4b6f-955c-c2403739c05d">
   </a>
   <h3 align="center">Quedoor</h3>
 
