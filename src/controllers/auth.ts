@@ -92,7 +92,7 @@ export const logIn = async (req: Request, res: Response) => {
   // eslint-disable-next-line no-unused-vars
   const { password, ...others } = user;
   return response({
-    res: res.cookie("accessToken", token, { httpOnly: true }),
+    res,
     message: "User logged in successfully.",
     data: {...others, access_token: token},
   });
@@ -103,10 +103,7 @@ export const logIn = async (req: Request, res: Response) => {
 //TODO: Blacklist tokens
 export const logOut = (req: AuthRequest, res: Response) => {
   response({
-    res: res.clearCookie("accessToken", {
-      secure: true,
-      sameSite: "none",
-    }),
+    res,
     message: "User has been logged out",
   });
 };
