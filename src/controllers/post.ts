@@ -42,7 +42,7 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
         );
       }
     }
-    const responseData = {data: postsWithUserInfo, page, limit, totalRecords };
+    const responseData = {data: postsWithUserInfo, page: Number(page), limit: Number(limit), totalRecords: Number(totalRecords) };
     response({ res, status: 200, data: responseData });
   } catch (error) {
     createError(500, String(error));

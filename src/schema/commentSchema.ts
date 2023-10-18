@@ -26,6 +26,14 @@ const commentSchema = {
     type: Date,
     default: Date.now(),
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 };
 
 export default commentSchema;
