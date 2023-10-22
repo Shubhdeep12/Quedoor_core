@@ -37,7 +37,7 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
         postsWithUserInfo.push(
           {
             ...post._doc,
-            user,
+            creator: user,
           },
         );
       }
@@ -72,8 +72,17 @@ export const createPost = async (req: AuthRequest, res: Response) => {
       return response({res, status: 500, message: "Unable to create Post!"});
     } 
 
+    const user = await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['password'] },
+    });
+
+    const postWithUserInfo = {
+      ...createdPost._doc,
+      creator: user,
+    };
     // TODO: to start a background job here - fanout
-    return response({ res, data:createdPost, status: 201, message: "Post created successfully" });
+    return response({ res, data: postWithUserInfo, status: 201, message: "Post created successfully" });
   } catch (error) {
     createError(500, error);
     return response({res, status: 500, message: "Unable to create Post!"});
@@ -103,7 +112,16 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
       return response({res, status: 500, message: "Post not found."});
     }
 
-    return response({ res, data:updatedPost, status: 200, message: "Post updated successfully" });
+    const user = await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['password'] },
+    });
+
+    const postWithUserInfo = {
+      ...updatedPost._doc,
+      creator: user,
+    };
+    return response({ res, data:postWithUserInfo, status: 200, message: "Post updated successfully" });
   } catch (error) {
     createError(500, error);
     return response({res, status: 500, message: String(error)});

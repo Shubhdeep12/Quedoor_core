@@ -27,11 +27,11 @@ export const uploadAttachment = async (req: AuthRequest, res: Response) => {
     // Upload image to Cloudinary
     const result = await uploadFile(req.file.buffer);
 
-    let imageText: String = "";
-    if(with_image_text === 'true') imageText = await getImageText(result.secure_url);
-    // console.log(imageText);
+    let image_text: String = "";
+    if(with_image_text === 'true') image_text = await getImageText(result.secure_url);
+    // console.log(image_text);
   
-    return response({ res, data: { imageUrl: result.secure_url, imageText } });
+    return response({ res, data: { image_url: result.secure_url, image_text } });
   } catch (error) {
     createError(500, String(error));
     return response({ res, status: 500, message: 'Server error' });
@@ -40,11 +40,11 @@ export const uploadAttachment = async (req: AuthRequest, res: Response) => {
 };
 
 export const deleteAttachment = async (req: AuthRequest, res: Response) => {
-  const imageUrl = req.body.image_url;
+  const {image_url :image_url} = req.query;
   try {
-    await deleteFile(imageUrl);
+    await deleteFile(String(image_url));
     
-    return response({ res, message: 'File deleted from Cloudinary'});
+    return response({ res, message: 'File deleted successfully'});
   } catch (error) {
     console.error(error);
     return response({res, status: 500, message: String(error) });

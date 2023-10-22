@@ -23,7 +23,7 @@ const UserSchema = {
   website: {
     type: DataTypes.STRING
   },
-  profileImg: {
+  profile_img: {
     type: DataTypes.STRING
   },
 };

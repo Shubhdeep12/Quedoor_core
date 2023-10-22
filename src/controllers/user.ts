@@ -49,7 +49,7 @@ export const updateUser = async(req: AuthRequest, res: Response) => {
       name: req.body.name,
       city: req.body.city,
       website: req.body.website,
-      profileImg: req.body.profile_img,
+      profile_img: req.body.profile_img,
     }, { where: { id: userId } });
     
   } catch (error) {
