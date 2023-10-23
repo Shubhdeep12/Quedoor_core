@@ -26,11 +26,11 @@ const postSchema = {
       ref: "Comment",
     },
   ],
-  createdAt: {
+  created_at: {
     type: Date,
     default: Date.now,
   },
-  updatedAt: {
+  updated_at: {
     type: Date,
     default: Date.now,
   },

@@ -26,11 +26,11 @@ const commentSchema = {
     type: Date,
     default: Date.now(),
   },
-  createdAt: {
+  created_at: {
     type: Date,
     default: Date.now,
   },
-  updatedAt: {
+  updated_at: {
     type: Date,
     default: Date.now,
   },
