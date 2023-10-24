@@ -8,6 +8,7 @@ import User from "../models/users";
 import Comment from "../models/comment";
 
 export const getComments = async (req: AuthRequest, res: Response) => {
+  User.sync();
   const postId = req.params?.postId;
   const { limit = 10, page = 1 }: any = req.query;
   try {

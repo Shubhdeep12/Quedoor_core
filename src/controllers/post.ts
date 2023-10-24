@@ -51,6 +51,7 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
 };
 
 export const createPost = async (req: AuthRequest, res: Response) => {
+  User.sync();
   const userId = req.user?.id;
   if (!req.body.description && !req.body.image_url) {
     createError(500, "Please enter content or add image.");
@@ -90,6 +91,7 @@ export const createPost = async (req: AuthRequest, res: Response) => {
 };
 
 export const updatePost = async (req: AuthRequest, res: Response) => {
+  User.sync();
   const userId = req.user?.id;
   if (!req.body.description && !req.body.image_url && !req.body.comments) {
     createError(500, "Please enter some updated content in body.");

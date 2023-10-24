@@ -11,7 +11,8 @@ import response from "../utils/response";
 import followUser from "../utils/follow";
 import unfollowUser from "../utils/unfollow";
 
-export const getUser = async(req: Request, res: Response) => {
+export const getUser = async (req: Request, res: Response) => {
+  User.sync();
   const userId = req.params?.userId;
   let user;
   try {
@@ -37,7 +38,8 @@ export const getUser = async(req: Request, res: Response) => {
   return response({ res, data: user, message: "User fetched successfully" });
 };
 
-export const updateUser = async(req: AuthRequest, res: Response) => {
+export const updateUser = async (req: AuthRequest, res: Response) => {
+  User.sync();
   const userId = req.user?.id;
   if (userId !== req.params.userId) {
     createError(401, "You are not authorized to update this user");
@@ -65,6 +67,7 @@ export const updateUser = async(req: AuthRequest, res: Response) => {
 };
 
 export const getAllFollowers = async (req: AuthRequest, res: Response) => {
+  User.sync();
   const userId = req.user?.id;
 
   try {
@@ -83,6 +86,7 @@ export const getAllFollowers = async (req: AuthRequest, res: Response) => {
 };
 
 export const getAllFollowing = async (req: AuthRequest, res: Response) => {
+  User.sync();
   const { userId } = req.params;
 
   try {
