@@ -28,4 +28,5 @@ export const handleLike = async (req: AuthRequest, res: Response) => {
     createError(500, String(error));
     return response({res, status: 500, message: String(error)});
   }
+  return response({res, status: 200, message: 'Reaction added successfully'});
 };
