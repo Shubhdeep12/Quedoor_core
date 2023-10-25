@@ -22,10 +22,6 @@ const commentSchema = {
     type: String,
     trim: true,
   },
-  date: {
-    type: Date,
-    default: Date.now(),
-  },
   created_at: {
     type: Date,
     default: Date.now,

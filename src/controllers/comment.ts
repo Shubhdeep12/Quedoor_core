@@ -31,7 +31,7 @@ export const getComments = async (req: AuthRequest, res: Response) => {
           commentsWithUserInfo.push(
             {
               ...comment._doc, 
-              user, 
+              creator: user, 
             },
           );
         }
@@ -46,6 +46,7 @@ export const getComments = async (req: AuthRequest, res: Response) => {
 };
 
 export const createComment = async (req: AuthRequest, res: Response) => {
+  User.sync();
   const userId = req.user?.id;
   const postId = req.params?.postId;
   if (!req.body.description && !req.body.image_url) {
@@ -71,8 +72,16 @@ export const createComment = async (req: AuthRequest, res: Response) => {
     await Post.findByIdAndUpdate(postId, { $push: { comments: createdComment._id } },
       { safe: true, upsert: true });
 
+    const user = await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['password'] },
+    });
+    const commentInfo = {
+      ...createdComment._doc,
+      creator: user,
+    };
     // TODO: to start a background job here - fanout
-    return response({ res, data:createdComment, status: 201, message: "Comment created successfully" });
+    return response({ res, data: commentInfo, status: 201, message: "Comment created successfully" });
   } catch (error) {
     createError(500, error);
     if (createdComment) {
@@ -84,6 +93,7 @@ export const createComment = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateComment = async (req: AuthRequest, res: Response) => {
+  User.sync();
   const userId = req.user?.id;
   if (!req.body.description && !req.body.image_url) {
     createError(500, "Please enter some updated content in body.");
@@ -105,7 +115,15 @@ export const updateComment = async (req: AuthRequest, res: Response) => {
       return response({res, status: 500, message: 'Error while updating comment. Please try again!'});
     }
 
-    return response({ res, data:updatedComment, status: 200, message: "Comment updated successfully" });
+    const user = await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['password'] },
+    });
+    const commentInfo = {
+      ...updatedComment._doc,
+      creator: user,
+    };
+    return response({ res, data: commentInfo, status: 200, message: "Comment updated successfully" });
   } catch (error) {
     createError(500, error);
     return response({res, status: 500, message: String(error)});

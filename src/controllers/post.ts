@@ -123,7 +123,7 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
       ...updatedPost._doc,
       creator: user,
     };
-    return response({ res, data:postWithUserInfo, status: 200, message: "Post updated successfully" });
+    return response({ res, data: postWithUserInfo, status: 200, message: "Post updated successfully" });
   } catch (error) {
     createError(500, error);
     return response({res, status: 500, message: String(error)});

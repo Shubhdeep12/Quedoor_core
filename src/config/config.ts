@@ -39,7 +39,7 @@ export default (app: Application, express: any) => {
   });
   app.use(
     cors({
-      origin: 'http://quedoor-client.com:3000',
+      origin: String(process.env.CLIENT_URL),
     })
   );
   app.use(cookieParser());
