@@ -25,43 +25,40 @@ export const getFilteredPosts = async (req: AuthRequest, res: Response) => {
 
     const followers = await getFollowing(Number(userId));
     const filter = { userId: { $in: [userId, ...(followers || [])] } };
-
-    const [posts, totalRecords] = await Promise.all([
-      Post.find(filter)
-        .sort({ created_at: -1 })
-        .limit(Number(limit))
-        .skip(skip),
-      Post.countDocuments(filter)
-    ]);
-
     let count = 1;
     if (description?.length > 2 && image_text && image_text?.length > 2) {
       count = 2;
     }
 
-    posts
-      .sort((a: any, b: any) => {
-        let valA =
+    const [posts, totalRecords] = await Promise.all([
+      Post.find(filter)
+        .sort((a: any, b: any) => {
+          let valA =
           ((image_text && image_text?.length > 1 &&
             stringSimilarity.compareTwoStrings(image_text, a.image_text)) +
             (description.length > 1 &&
               stringSimilarity.compareTwoStrings(description, a.description))) /
           count;
-        let valB =
+          let valB =
           ((image_text && image_text?.length > 1 &&
             stringSimilarity.compareTwoStrings(image_text, b.image_text)) +
             (description.length > 1 &&
               stringSimilarity.compareTwoStrings(description, b.description))) /
           count;
 
-        if (valA > valB) {
-          return 1;
-        } else if (valA < valB) {
-          return -1;
-        }
-        return 0;
-      })
-      .reverse();
+          if (valA > valB) {
+            return 1;
+          } else if (valA < valB) {
+            return -1;
+          }
+          return 0;
+        })
+        .reverse()
+        .limit(Number(limit))
+        .skip(skip),
+      Post.countDocuments(filter)
+    ]);
+
     
     const postsWithUserInfo = [];
     for (const post of posts) {
