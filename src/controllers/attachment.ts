@@ -18,10 +18,10 @@ export const uploadAttachment = async (req: AuthRequest, res: Response) => {
     }
 
     // Check file type
-    const allowedMimeTypes = ['image/jpeg', 'image/png'];
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
     if (!allowedMimeTypes.includes(req.file.mimetype)) {
-      createError(400, 'Invalid file type. Only JPEG and PNG are allowed.');
-      return response({ res, status: 400, message: 'Invalid file type. Only JPEG and PNG are allowed.' });
+      createError(400, 'Invalid file type. Only JPEG, JPG, GIF and PNG are allowed.');
+      return response({ res, status: 400, message: 'Invalid file type. Only JPEG, JPG, GIF and PNG are allowed.' });
     }
 
     // Upload image to Cloudinary

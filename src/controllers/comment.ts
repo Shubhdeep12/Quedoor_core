@@ -18,7 +18,7 @@ export const getComments = async (req: AuthRequest, res: Response) => {
     let commentsWithUserInfo = [];
     if (comments) {
       
-      const result = await Comment.find({ _id: { $in: comments } }).sort({ date: -1 }) 
+      const result = await Comment.find({ _id: { $in: comments } }).sort({ created_at: -1 }) 
         .limit(Number(limit)) 
         .skip(skip);
     
@@ -143,7 +143,7 @@ export const deleteComment = async (req: AuthRequest, res: Response) => {
       return response({res, status: 500, message: 'Comment not found. Please try again!'});
     }
 
-    await Comment.findByIdAndUpdate(deletedComment.postId, { $pull: { comments: deletedComment._id } },
+    await Post.findByIdAndUpdate(deletedComment.postId, { $pull: { comments: deletedComment._id } },
       { safe: true, upsert: true });
     return response({ res, status: 204, message: "Comment deleted successfully" });
   } catch (error) {

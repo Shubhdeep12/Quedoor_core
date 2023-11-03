@@ -6,11 +6,13 @@ import commentRoutes from "./comments";
 import userRoutes from "./users";
 import attachmentRoutes from './attachment';
 import miscRoutes from "./misc";
+import filterRoutes from './filter';
 
 const router = express.Router();
 
 router.use("/auth", authRoutes);
 router.use("/posts", postRoutes);
+router.use("/filter", filterRoutes);
 router.use("/comments", commentRoutes);
 router.use("/users", userRoutes);
 router.use("/attachment", attachmentRoutes);

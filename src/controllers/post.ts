@@ -20,7 +20,7 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
 
     const [posts, totalRecords] = await Promise.all([
       Post.find(filter)
-        .sort({ date: -1 })
+        .sort({ created_at: -1 })
         .limit(Number(limit))
         .skip(skip),
       Post.countDocuments(filter)

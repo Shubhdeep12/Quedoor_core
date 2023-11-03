@@ -30,6 +30,7 @@
     "pg-hstore": "^2.3.4",
     "redis": "^4.6.10",
     "sequelize": "^6.33.0",
+    "string-similarity": "^4.0.4",
     "tesseract.js": "^5.0.2",
     "winston": "^3.10.0"
   },
