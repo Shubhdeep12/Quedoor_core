@@ -3,6 +3,7 @@ import {
   follow,
   getAllFollowers,
   getAllFollowing,
+  getAllUsers,
   getUser,
   unfollow,
   updateUser
@@ -11,6 +12,7 @@ import verifyToken from "../middlewares/verifyToken";
 
 const router = express.Router();
 
+router.get("/", verifyToken, getAllUsers);
 router.get("/find/:userId", verifyToken, getUser);
 router.put("/:userId", verifyToken, updateUser);
 router.get('/:userId/followers', verifyToken, getAllFollowers);

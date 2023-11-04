@@ -11,6 +11,19 @@ import response from "../utils/response";
 import followUser from "../utils/follow";
 import unfollowUser from "../utils/unfollow";
 
+export const getAllUsers = async (req: Request, res: Response) => {
+  User.sync();
+  let users = [];
+  try {
+    users = await User.findAll({ attributes: { exclude: ['password'] } });
+    return response({ res, data: users, message: "User fetched successfully" });
+  } catch (error) {
+    createError(500, String(error));
+    return response({res, status: 500, message: String(error)});
+  }
+
+};
+
 export const getUser = async (req: Request, res: Response) => {
   User.sync();
   const userId = req.params?.userId;
