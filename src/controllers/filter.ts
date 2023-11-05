@@ -20,7 +20,7 @@ export const getFilteredPosts = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
   const { limit = 10, page = 1 }: any = req.query;
   try {
-    // TODO: to have newsfeed cache here instead of this.
+   
     const skip = (page - 1) * limit;
 
     const followers = await getFollowing(Number(userId));
@@ -29,39 +29,41 @@ export const getFilteredPosts = async (req: AuthRequest, res: Response) => {
     if (description?.length > 2 && image_text && image_text?.length > 2) {
       count = 2;
     }
+    
+    // Fetch the posts first
+    const posts = await Post.find(filter).lean().exec();
+    console.log({posts});
+    // Apply your custom sort logic to the posts
+    posts.sort((a: any, b: any) => {
+      const valA =
+        ((image_text && image_text?.length > 1 &&
+          stringSimilarity.compareTwoStrings(image_text, a.image_text)) +
+        (description.length > 1 &&
+          stringSimilarity.compareTwoStrings(description, a.description))) /
+        count;
+      const valB =
+        ((image_text && image_text?.length > 1 &&
+          stringSimilarity.compareTwoStrings(image_text, b.image_text)) +
+        (description.length > 1 &&
+          stringSimilarity.compareTwoStrings(description, b.description))) /
+        count;
 
-    const [posts, totalRecords] = await Promise.all([
-      Post.find(filter)
-        .sort((a: any, b: any) => {
-          let valA =
-          ((image_text && image_text?.length > 1 &&
-            stringSimilarity.compareTwoStrings(image_text, a.image_text)) +
-            (description.length > 1 &&
-              stringSimilarity.compareTwoStrings(description, a.description))) /
-          count;
-          let valB =
-          ((image_text && image_text?.length > 1 &&
-            stringSimilarity.compareTwoStrings(image_text, b.image_text)) +
-            (description.length > 1 &&
-              stringSimilarity.compareTwoStrings(description, b.description))) /
-          count;
+      if (valA > valB) {
+        return -1; // Sort in descending order
+      } else if (valA < valB) {
+        return 1; // Sort in descending order
+      }
+      return 0;
+    });
 
-          if (valA > valB) {
-            return 1;
-          } else if (valA < valB) {
-            return -1;
-          }
-          return 0;
-        })
-        .reverse()
-        .limit(Number(limit))
-        .skip(skip),
-      Post.countDocuments(filter)
-    ]);
+    // Apply limit and skip to the sorted data
+    const sortedPosts = posts.slice(skip, skip + Number(limit));
 
+    // Get total records count
+    const totalRecords = posts.length;
     
     const postsWithUserInfo = [];
-    for (const post of posts) {
+    for (const post of sortedPosts) {
       const user = await User.findOne({
         where: { id: post.userId },
         attributes: { exclude: ['password'] },
@@ -70,7 +72,7 @@ export const getFilteredPosts = async (req: AuthRequest, res: Response) => {
     
         postsWithUserInfo.push(
           {
-            ...post._doc,
+            ...post,
             creator: user,
           },
         );

@@ -11,12 +11,36 @@ import response from "../utils/response";
 import followUser from "../utils/follow";
 import unfollowUser from "../utils/unfollow";
 
-export const getAllUsers = async (req: Request, res: Response) => {
+export const getAllUsers = async (req: AuthRequest, res: Response) => {
   User.sync();
-  let users = [];
+  const { limit = 10, page = 1 }: any = req.query;
   try {
-    users = await User.findAll({ attributes: { exclude: ['password'] } });
-    return response({ res, data: users, message: "User fetched successfully" });
+    const skip = (page - 1) * limit;
+
+    const [users, totalRecords] = await Promise.all([
+      User.findAll({
+        attributes: { exclude: ['password'] },
+        limit: limit, 
+        offset: skip, 
+      }),
+      User.findAndCountAll()
+    ]);
+
+    const usersWithCounts = await Promise.all(
+      users.map(async (user) => {
+        const following = await getFollowing(Number(user.dataValues.id)); // Use user.id or the appropriate field from your User model
+        const followers = await getFollowers(Number(user.dataValues.id)); // Implement a getFollowers function similarly
+        return {
+          ...user.get({ plain: true }),
+          following,
+          followers,
+        };
+      })
+    );
+  
+    const responseData = { data: usersWithCounts, page: Number(page), limit: Number(limit), totalRecords: Number(totalRecords.count) };
+
+    return response({ res, data: responseData, message: "User fetched successfully" });
   } catch (error) {
     createError(500, String(error));
     return response({res, status: 500, message: String(error)});
@@ -82,16 +106,31 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
 export const getAllFollowers = async (req: AuthRequest, res: Response) => {
   User.sync();
   const userId = req.user?.id;
-
+  const { limit = 10, page = 1 }: any = req.query;
   try {
+    
     const followers = await getFollowers(Number(userId));
-    const users = await User.findAll({
-      where: {
-        id: followers,
-      },
-      attributes: { exclude: ['password'] }, // Exclude the 'password' field
-    });
-    return response({ res, data: { success: true, result: users } , status: 200 });
+
+    const skip = (page - 1) * limit;
+
+    const [users, totalRecords] = await Promise.all([
+      User.findAll({
+        where: {
+          id: followers,
+        },
+        attributes: { exclude: ['password'] },
+        limit: limit, 
+        offset: skip, 
+      }),
+      User.findAndCountAll({
+        where: {
+          id: followers,
+        },
+      })
+    ]);
+    const responseData = {data: users, page: Number(page), limit: Number(limit), totalRecords: Number(totalRecords.count) };
+
+    return response({ res, data: responseData , status: 200 });
   } catch (error) {
     createError(500, String(error));
     return response({ res, message: 'Internal Server error.' , status: 500 });
@@ -101,16 +140,31 @@ export const getAllFollowers = async (req: AuthRequest, res: Response) => {
 export const getAllFollowing = async (req: AuthRequest, res: Response) => {
   User.sync();
   const { userId } = req.params;
+  const { limit = 10, page = 1 }: any = req.query;
 
   try {
     const following = await getFollowing(Number(userId));
-    const users = await User.findAll({
-      where: {
-        id: following,
-      },
-      attributes: { exclude: ['password'] }, // Exclude the 'password' field
-    });
-    return response({ res, data: {success: true, result: users}, status: 200 });
+
+    const skip = (page - 1) * limit;
+
+    const [users, totalRecords] = await Promise.all([
+      User.findAll({
+        where: {
+          id: following,
+        },
+        attributes: { exclude: ['password'] },
+        limit: limit, 
+        offset: skip, 
+      }),
+      User.findAndCountAll({
+        where: {
+          id: following,
+        }, })
+    ]);
+
+    const responseData = {data: users, page: Number(page), limit: Number(limit), totalRecords: Number(totalRecords.count) };
+
+    return response({ res, data: responseData, status: 200 });
   } catch (error) {
     createError(500, String(error));
     return response({ res, message: 'Internal Server error.' , status: 500 });
@@ -126,9 +180,8 @@ export const follow = async (req: AuthRequest, res: Response) => {
   try {
     // Create a relationship in Neo4j
     const result = await followUser(Number(follower_id), Number(following_id));
-    console.log({ result });
     
-    return response({ res, data: { success: true, result } , status: 200 });
+    return response({ res, data: result , status: 200 });
   } catch (error) {
     createError(500, String(error));
     return response({ res, message: 'Internal Server error.' , status: 500 });
@@ -144,7 +197,7 @@ export const unfollow = async (req: AuthRequest, res: Response) => {
   try {
     // Delete the relationship in Neo4j
     const result = await unfollowUser(Number(follower_id), Number(following_id));
-    return response({ res, data: { success: true, result } , status: 200 });
+    return response({ res, data: result , status: 200 });
   } catch (error) {
     createError(500, String(error));
     return response({ res, message: 'Internal Server error.' , status: 500 });
