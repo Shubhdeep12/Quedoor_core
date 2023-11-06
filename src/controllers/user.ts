@@ -57,7 +57,7 @@ export const getUser = async (req: Request, res: Response) => {
       where:{
         id: userId
       },
-      attributes: { exclude: ['password'] }, // Exclude the 'password' field
+      attributes: { exclude: ['password'] },
     });
     if (!user) {
       createError(404, 'Invalid User Id, Please try again!');
@@ -78,29 +78,39 @@ export const getUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: AuthRequest, res: Response) => {
   User.sync();
   const userId = req.user?.id;
-  if (userId !== req.params.userId) {
+  if (Number(userId) !== Number(req.params.userId)) {
     createError(401, "You are not authorized to update this user");
     return response({res, status: 401, message: "You are not authorized to update this user"});
   }
-  let result:any;
   try {
-    result = await User.update({
-      name: req.body.name,
-      city: req.body.city,
-      website: req.body.website,
-      profile_img: req.body.profile_img,
-    }, { where: { id: userId } });
+    const [rowCount, updatedUser] = await User.update(
+      {
+        name: req.body.name,
+        city: req.body.city,
+        website: req.body.website,
+        profile_img: req.body.profile_img,
+      },
+      {
+        where: { id: userId },
+        returning: true,
+      }
+    );
+
+    if (updatedUser && updatedUser[0] && updatedUser[0].dataValues) {
+      delete updatedUser[0].dataValues.password;
+    }
+
+    if (rowCount !== 0)
+      return response({ res, data: updatedUser[0], status: 200, message: "User updated" });
+  
+    createError(403, "You can only update your own profile!");
+    return response({res, status: 403, message: "You can only update your own profile!"});
     
   } catch (error) {
     createError(500, error);
     return response({res, status: 500, message:"Unable to update user, Please try again!"});
   }
-
-  if (result?.affectedRows > 0)
-    return response({ res, status: 200, message: "User updated" });
   
-  createError(403, "You can only update your own profile!");
-  return response({res, status: 403, message: "You can only update your own profile!"});
 };
 
 export const getAllFollowers = async (req: AuthRequest, res: Response) => {
