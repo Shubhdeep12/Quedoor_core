@@ -24,7 +24,7 @@
      <li>Express.js</li>
      <li>MongoDB</li>
      <li>Mongoose</li>
-     <li>PostgresSQL</li>
+     <li>PostgreSQL</li>
      <li>Sequelize</li>
      <li>Neo4j</li>
      <li>Typescript</li>
