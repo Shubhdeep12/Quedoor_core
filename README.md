@@ -35,11 +35,11 @@
   <br />
 
   ## Checkpoints
-- [x] ~~Add Authentication API~~
-- [x] ~~Add User details API~~
-- [x] ~~APIs to handle CRUD of Posts~~
-- [x] ~~APIs to handle CRUD of comments~~
-- [x] ~~Handle following and followers~~
+- [x] Add Authentication API
+- [x] Add User details API
+- [x] APIs to handle CRUD of Posts
+- [x] APIs to handle CRUD of comments
+- [x] Handle following and followers
 - [ ] To create caching for Users and Posts Database.
 - [ ] To create a Newsfeed Cache.
 - [ ] To create a Post Service to handle Post creation Flow and updating cache.
