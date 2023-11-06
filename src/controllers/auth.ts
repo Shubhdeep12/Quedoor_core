@@ -10,8 +10,6 @@ import User from "../models/users";
 import { jwt_key } from "../config/config";
 import { getNeo4jDriver } from "../config/db/neo4j";
 import { AuthRequest } from "../entities/auth.entity";
-import Post from "../models/posts";
-import Comment from "../models/comment";
 
 export const register = async (req: Request, res: Response) => {
   User.sync();
@@ -106,10 +104,6 @@ export const logIn = async (req: Request, res: Response) => {
 
 //TODO: Blacklist tokens
 export const logOut = (req: AuthRequest, res: Response) => {
-  User.sync();
-  User.destroy({where: {}});
-  Post.deleteMany({});
-  Comment.deleteMany({});
   response({
     res,
     message: "User has been logged out",
