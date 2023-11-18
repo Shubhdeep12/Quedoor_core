@@ -31,6 +31,7 @@ export const redis_uri = String(process.env.REDIS_URI);
 export const cloud_name = String(process.env.CLOUDINARY_CLOUD_NAME);
 export const cloud_key = String(process.env.CLOUDINARY_CLOUD_API_KEY);
 export const cloud_secret = String(process.env.CLOUDINARY_CLOUD_API_SECRET);
+export const selfSignedCertificate = String(JSON.parse(String(process.env.POSTGRES_SELF_SIGNED_CERTIFICATE_KEY)).KEY);
 
 export default (app: Application, express: any) => {
   app.use((req, res, next) => {

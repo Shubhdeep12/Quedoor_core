@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 // import fs from 'fs';
 
-import { node_env, postgres_db, postgres_host, postgres_password, postgres_port, postgres_user } from '../config';
+import { selfSignedCertificate, node_env, postgres_db, postgres_host, postgres_password, postgres_port, postgres_user } from '../config';
 
 const postgresConnection= new Sequelize({
   dialect: "postgres",
@@ -13,7 +13,7 @@ const postgresConnection= new Sequelize({
   ...(node_env === 'production' ? {dialectOptions: {
     ssl: {
       rejectUnauthorized: false,
-      // ca: fs.readFileSync('./ca.pem').toString()
+      ca: selfSignedCertificate
     },
   }} : {})
 });
