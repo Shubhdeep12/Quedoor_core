@@ -12,7 +12,7 @@ const postgresConnection= new Sequelize({
   password: postgres_password,
   ...(node_env === 'production' ? {dialectOptions: {
     ssl: {
-      rejectUnauthorized: false,
+      rejectUnauthorized: true,
       ca: selfSignedCertificate
     },
   }} : {})
