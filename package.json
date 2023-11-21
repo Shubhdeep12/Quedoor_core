@@ -32,8 +32,7 @@
     "sequelize": "^6.33.0",
     "string-similarity": "^4.0.4",
     "tesseract.js": "^5.0.2",
-    "winston": "^3.10.0",
-    "ts-node": "^10.9.1"
+    "winston": "^3.10.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
