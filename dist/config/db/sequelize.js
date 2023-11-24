@@ -5,7 +5,7 @@ const sequelize_1 = require("sequelize");
 const config_1 = require("../config");
 const postgresConnection = new sequelize_1.Sequelize(Object.assign({ dialect: "postgres", host: config_1.postgres_host, port: config_1.postgres_port, database: config_1.postgres_db, username: config_1.postgres_user, password: config_1.postgres_password }, (config_1.node_env === 'production' ? { dialectOptions: {
         ssl: {
-            rejectUnauthorized: true,
+            rejectUnauthorized: false,
             ca: config_1.selfSignedCertificate
         },
     } } : {})));
