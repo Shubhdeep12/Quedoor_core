@@ -7,8 +7,16 @@
     "test": "echo \"no test specified\" && exit 1",
     "start": "nodemon src/index.ts",
     "server": "ts-node src/index.ts",
+    "build": "rimraf dist && tsc",
+    "ts.check": "tsc --project tsconfig.json",
+    "add-build": "git add dist",
     "lint": "eslint --fix ./src/*.ts"
   },
+  "pre-commit": [
+    "ts.check",
+    "build",
+    "add-build"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -31,7 +39,7 @@
     "redis": "^4.6.10",
     "sequelize": "^6.33.0",
     "string-similarity": "^4.0.4",
-    "tesseract.js": "^5.0.2",
+    "tesseract.js": "^5.0.3",
     "winston": "^3.10.0"
   },
   "devDependencies": {
@@ -47,6 +55,8 @@
     "concurrently": "^8.2.1",
     "eslint": "^8.50.0",
     "nodemon": "^3.0.1",
+    "pre-commit": "^1.2.2",
+    "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   }
