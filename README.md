@@ -22,11 +22,8 @@
   <ul>
      <li>Node.js</li>
      <li>Express.js</li>
-     <li>MongoDB</li>
-     <li>Mongoose</li>
      <li>PostgreSQL</li>
      <li>Sequelize</li>
-     <li>Neo4j</li>
      <li>Typescript</li>
      <li>Redis</li>
   </ul>
