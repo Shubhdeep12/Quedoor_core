@@ -2,82 +2,80 @@ import { Response } from "express";
 
 import response from "../utils/response";
 import createError from "../utils/httpError";
-import Post from "../models/posts";
+
 import { AuthRequest } from "../entities/auth.entity";
-import User from "../models/users";
-import Comment from "../models/comment";
+
+import { User } from "../models/user";
+import { Post } from "../models/post";
+import { Comment } from "../models/comment";
 
 export const getComments = async (req: AuthRequest, res: Response) => {
   User.sync();
-  const postId = req.params?.postId;
-  const { limit = 10, page = 1 }: any = req.query;
+  Post.sync();
+  Comment.sync();
   try {
+    const postId = Number(req.params?.postId);
+    const { limit = 10, page = 1 }: any = req.query;
     const skip = (page - 1) * limit;
 
-    const { comments } = await Post.findById(postId);
-    let commentsWithUserInfo = [];
-    if (comments) {
-      
-      const result = await Comment.find({ _id: { $in: comments } }).sort({ created_at: -1 }) 
-        .limit(Number(limit)) 
-        .skip(skip);
-    
-      for (const comment of result) {
-        const user = await User.findOne({
-          where: { id: comment.userId },
-          attributes: { exclude: ['password'] }, 
-        });
-        if (user) {
-          commentsWithUserInfo.push(
-            {
-              ...comment._doc, 
-              creator: user, 
-            },
-          );
-        }
-      }
+    const post = await Post.findByPk(postId);
+    if (!post) {
+      createError(404, String('Post not found'));
+      return response({ res, status: 404, message: 'Post not found' });
     }
-    const responseData = {data : commentsWithUserInfo, page,limit,totalRecords: comments.length};
-    return response({ res, status: 200, data: responseData });
+    const comments = await Comment.findAll({
+      where: { postId },
+      order: [['created_at', 'DESC']],
+      limit: Number(limit),
+      offset: skip,
+    });
+
+    const commentsWithUserInfo = await Promise.all(comments.map(async (comment) => {
+      const commentUserId = Number(comment.userId);
+      const user = await User.findByPk(commentUserId, {attributes: { exclude: ['password'] } });
+      return { ...comment.toJSON(), creator: user };
+    }));
+
+    const responseData = { data: commentsWithUserInfo, page, limit, totalRecords: comments.length };
+    return response({res, status: 200, data: responseData});
   } catch (error) {
     createError(500, String(error));
-    return response({res, status: 500, message: String(error)});
+    return response({ res, status: 500, message: String(error) });
   }
 };
 
 export const createComment = async (req: AuthRequest, res: Response) => {
   User.sync();
-  const userId = req.user?.id;
-  const postId = req.params?.postId;
-  if (!req.body.description && !req.body.image_url) {
+  Post.sync();
+  Comment.sync();
+  const userId = Number(req.user?.id);
+  const postId = Number(req.params?.postId);
+  if (!req.body.description && !req.body.imageUrl) {
     createError(500, "Please enter content or add image.");
-    return response({res, status: 500, message: "Please enter content or add image."});
+    return response({ res, status: 500, message: "Please enter content or add image." });
   }
   let createdComment;
   try {
-    const commentData = {
-      userId, postId,
-      image_url: req.body.image_url,
-      image_text: req.body.image_text,
-      rich_description: req.body.rich_description,
+    const createdComment = await Comment.create({
+      userId: Number(userId),
+      postId: Number(postId),
+      imageUrl: req.body.imageUrl,
+      imageText: req.body.imageText,
+      richDescription: req.body.richDescription,
       description: req.body.description,
-    };
+    } as unknown as Comment);
 
-    createdComment = await Comment.create(commentData);
     if (!createdComment) {
-      createError(500, 'Unable to create Comment!');
       return response({ res, status: 500, message: 'Unable to create Comment!' });
-    } 
+    }
 
-    await Post.findByIdAndUpdate(postId, { $push: { comments: createdComment._id } },
-      { safe: true, upsert: true });
-
-    const user = await User.findOne({
-      where: { id: userId },
-      attributes: { exclude: ['password'] },
-    });
+    await Comment.update(
+      { postId: Number(postId) },
+      { where: { id: createdComment.id } }
+    );
+    const user = await User.findByPk(userId, { attributes: { exclude: ['password'] } });
     const commentInfo = {
-      ...createdComment._doc,
+      ...createdComment.toJSON(),
       creator: user,
     };
     // TODO: to start a background job here - fanout
@@ -85,8 +83,7 @@ export const createComment = async (req: AuthRequest, res: Response) => {
   } catch (error) {
     createError(500, error);
     if (createdComment) {
-      // You may need to handle errors in the rollback process as well
-      await Comment.findByIdAndDelete(createdComment._id);
+      await Comment.destroy({ where: { id: (createdComment as Comment).id } });
     }
     return response({ res, status: 500, message: 'Unable to create Comment!' });
   }
@@ -94,60 +91,64 @@ export const createComment = async (req: AuthRequest, res: Response) => {
 
 export const updateComment = async (req: AuthRequest, res: Response) => {
   User.sync();
-  const userId = req.user?.id;
-  if (!req.body.description && !req.body.image_url) {
+  const userId = Number(req.user?.id);
+  if (!req.body.description && !req.body.imageUrl) {
     createError(500, "Please enter some updated content in body.");
-    return response({res, status: 500, message: "Please enter some updated content in body."});
+    return response({ res, status: 500, message: "Please enter some updated content in body." });
   }
   try {
-    const commentId = req.params.id;
+    const commentId = Number(req.params.id);
 
     const updatedData = {
-      image_url: req.body.image_url,
-      image_text: req.body.image_text,
-      rich_description: req.body.rich_description,
+      imageUrl: req.body.imageUrl,
+      imageText: req.body.imageText,
+      richDescription: req.body.richDescription,
       description: req.body.description,
     };
 
-    const updatedComment = await Comment.findByIdAndUpdate({_id: commentId, userId}, updatedData, { new: true });
-    if (!updatedComment) {
-      createError(500, 'Error while updating comment.');
-      return response({res, status: 500, message: 'Error while updating comment. Please try again!'});
+    const commentToUpdate = await Comment.findByPk(commentId);
+
+    if (!commentToUpdate || commentToUpdate.userId !== userId) {
+      createError(500, 'Comment not found or user does not have permission to update');
+      return response({ res, status: 404, message: 'Comment not found or user does not have permission to update' });
     }
+
+    await commentToUpdate.update(updatedData);
 
     const user = await User.findOne({
       where: { id: userId },
       attributes: { exclude: ['password'] },
     });
     const commentInfo = {
-      ...updatedComment._doc,
+      ...commentToUpdate.toJSON(),
       creator: user,
     };
     return response({ res, data: commentInfo, status: 200, message: "Comment updated successfully" });
   } catch (error) {
     createError(500, error);
-    return response({res, status: 500, message: String(error)});
+    return response({ res, status: 500, message: String(error) });
   }
 };
 
 export const deleteComment = async (req: AuthRequest, res: Response) => {
-  const userId = req.user?.id;
+  const userId = Number(req.user?.id);
   try {
-    const commentId = req.params.id;
-    
+    const commentId = Number(req.params.id);
+    const commentToDelete = await Comment.findOne({ where: { id: commentId, userId } });
 
-    // Use the Comment model to find and delete the post by ID
-    const deletedComment = await Comment.findByIdAndDelete({_id: commentId, userId});
-    if (!deletedComment) {
+    if (!commentToDelete) {
       createError(500, 'Comment not found.');
-      return response({res, status: 500, message: 'Comment not found. Please try again!'});
+      return response({ res, status: 500, message: 'Comment not found. Please try again!' });
     }
+    commentToDelete.destroy();
 
-    await Post.findByIdAndUpdate(deletedComment.postId, { $pull: { comments: deletedComment._id } },
-      { safe: true, upsert: true });
+    await Post.update(
+      { comments: [] },
+      { where: { id: commentToDelete.postId } }
+    );
     return response({ res, status: 204, message: "Comment deleted successfully" });
   } catch (error) {
     createError(500, error);
-    return response({res, status: 500, message: String(error)});
+    return response({ res, status: 500, message: String(error) });
   }
 };

@@ -1,18 +1,20 @@
-import { getNeo4jDriver } from "../config/db/neo4j";
+import {Relationship} from "../models/relationship";
 
-const getFollowing = async (userId: Number) => {
-  const session = getNeo4jDriver().session();
+const getFollowing = async (userId: number): Promise<number[]> => {
+  Relationship.sync();
   try {
-    const result = await session.run(
-      'MATCH (follower:User {user_id: $userId})-[:FOLLOWS]->(following:User) RETURN following',
-      { userId }
-    );
+    const following = await Relationship.findAll({
+      where: {
+        followerId: userId,
+      },
+      attributes: ['followingId'],
+    });
 
-    return result.records.map((record: any) => record.get('following').properties.user_id.low);
+    const followingIds = following.map((follow: any) => follow.followingId);
+
+    return followingIds;
   } catch (error: any) {
-    throw new Error(error);
-  } finally {
-    session.close();
+    throw new Error(`Error: ${error.message}`);
   }
 };
 

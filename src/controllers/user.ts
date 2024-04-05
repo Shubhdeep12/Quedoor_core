@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import { AuthRequest } from "../entities/auth.entity";
 
-import User from "../models/users";
+import {User} from "../models/user";
 
 import getFollowers from "../utils/getFollowers";
 import getFollowing from "../utils/getFollowing";
@@ -50,9 +50,9 @@ export const getAllUsers = async (req: AuthRequest, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   User.sync();
-  const userId = req.params?.userId;
   let user;
   try {
+    const userId = Number(req.params?.userId);
     user = await User.findOne({
       where:{
         id: userId
@@ -69,15 +69,12 @@ export const getUser = async (req: Request, res: Response) => {
     return response({res, status: 500, message: String(error)});
   }
   
-  // eslint-disable-next-line no-unused-vars
- 
-    
   return response({ res, data: user, message: "User fetched successfully" });
 };
 
 export const updateUser = async (req: AuthRequest, res: Response) => {
   User.sync();
-  const userId = req.user?.id;
+  const userId = Number(req.user?.id);
   if (Number(userId) !== Number(req.params.userId)) {
     createError(401, "You are not authorized to update this user");
     return response({res, status: 401, message: "You are not authorized to update this user"});
@@ -88,7 +85,7 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
         name: req.body.name,
         city: req.body.city,
         website: req.body.website,
-        profile_img: req.body.profile_img,
+        profileImg: req.body.profileImg,
       },
       {
         where: { id: userId },
@@ -96,8 +93,8 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
       }
     );
 
-    if (updatedUser && updatedUser[0] && updatedUser[0].dataValues) {
-      delete updatedUser[0].dataValues.password;
+    if (updatedUser && updatedUser[0]) {
+      delete (updatedUser[0] as any).password;
     }
 
     if (rowCount !== 0)
@@ -115,7 +112,7 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
 
 export const getAllFollowers = async (req: AuthRequest, res: Response) => {
   User.sync();
-  const userId = req.user?.id;
+  const userId = Number(req.user?.id);
   const { limit = 10, page = 1 }: any = req.query;
   try {
     
@@ -149,10 +146,10 @@ export const getAllFollowers = async (req: AuthRequest, res: Response) => {
 
 export const getAllFollowing = async (req: AuthRequest, res: Response) => {
   User.sync();
-  const { userId } = req.params;
-  const { limit = 10, page = 1 }: any = req.query;
-
+  
   try {
+    const userId = Number(req.params.userId);
+    const { limit = 10, page = 1 }: any = req.query;
     const following = await getFollowing(Number(userId));
 
     const skip = (page - 1) * limit;
@@ -182,14 +179,14 @@ export const getAllFollowing = async (req: AuthRequest, res: Response) => {
 };
 
 export const follow = async (req: AuthRequest, res: Response) => {
-  const { follower_id, following_id } = req.body;
-  if (!follower_id || !following_id) {
+  const { followerId, followingId } = req.body;
+  if (!followerId || !followingId) {
     createError(500, "FollowerId or followingId is missing.");
     return response({res, status: 500, message: "FollowerId or followingId is missing."});
   }
   try {
     // Create a relationship in Neo4j
-    const result = await followUser(Number(follower_id), Number(following_id));
+    const result = await followUser(Number(followerId), Number(followingId));
     
     return response({ res, data: result , status: 200 });
   } catch (error) {
@@ -199,14 +196,14 @@ export const follow = async (req: AuthRequest, res: Response) => {
 };
 
 export const unfollow = async (req: AuthRequest, res: Response) => {
-  const { follower_id, following_id } = req.body;
-  if (!follower_id || !following_id) {
+  const { followerId, followingId } = req.body;
+  if (!followerId || !followingId) {
     createError(500, "FollowerId or followingId is missing.");
     return response({res, status: 500, message: "FollowerId or followingId is missing."});
   }
   try {
     // Delete the relationship in Neo4j
-    const result = await unfollowUser(Number(follower_id), Number(following_id));
+    const result = await unfollowUser(Number(followerId), Number(followingId));
     return response({ res, data: result , status: 200 });
   } catch (error) {
     createError(500, String(error));

@@ -4,7 +4,7 @@ import response from "../utils/response";
 import createError from "../utils/httpError";
 import { AuthRequest } from "../entities/auth.entity";
 import { jwt_key } from "../config/config";
-import User from "../models/users";
+import {User} from "../models/user";
 
 export const getMe = async (req: AuthRequest, res: Response) => {
   const _token = req.params.token;

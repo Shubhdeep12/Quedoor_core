@@ -2,76 +2,84 @@ import { Response } from "express";
 
 import response from "../utils/response";
 import createError from "../utils/httpError";
-import Post from "../models/posts";
+import { Post } from "../models/post";
 import { AuthRequest } from "../entities/auth.entity";
-import User from "../models/users";
-import Comment from "../models/comment";
+import { User } from "../models/user";
+import { Comment } from "../models/comment";
 import getFollowing from "../utils/getFollowing";
+import { Op } from "sequelize";
 
 export const getPosts = async (req: AuthRequest, res: Response) => {
-  const userId = req.user?.id;
-  const { limit = 10, page = 1 }: any = req.query;
+  User.sync();
+  Post.sync();
   try {
-    // TODO: to have newsfeed cache here instead of this.
+    const userId = Number(req.user?.id);
+    const { limit = 10, page = 1 }: any = req.query;
     const skip = (page - 1) * limit;
 
-    const followers = await getFollowing(Number(userId));
-    const filter = { userId: { $in: [userId, ...(followers || [])] } };
+    const followers = await getFollowing(userId);
+    const filter = {
+      userId: {
+        [Op.in]: [...followers, userId]
+      }
+    };
 
     const [posts, totalRecords] = await Promise.all([
-      Post.find(filter)
-        .sort({ created_at: -1 })
-        .limit(Number(limit))
-        .skip(skip),
-      Post.countDocuments(filter)
+      Post.findAll({
+        where: filter,
+        order: [['created_at', 'DESC']],
+        limit: limit,
+        offset: skip,
+      }),
+      Post.count({
+        where: filter,
+      }),
     ]);
-    
+
     const postsWithUserInfo = [];
     for (const post of posts) {
       const user = await User.findOne({
-        where: { id: post.userId },
-        attributes: { exclude: ['password'] },
+        where: { id: Number((post as any).userId) },
+        attributes: { exclude: ['password'] }
       });
       if (user) {
-    
-        postsWithUserInfo.push(
-          {
-            ...post._doc,
-            creator: user,
-          },
-        );
+        postsWithUserInfo.push({
+          ...post.dataValues,
+          creator: user.dataValues
+        });
       }
     }
-    const responseData = {data: postsWithUserInfo, page: Number(page), limit: Number(limit), totalRecords: Number(totalRecords) };
+    const responseData = { data: postsWithUserInfo, page: Number(page), limit: Number(limit), totalRecords: Number(totalRecords) };
     response({ res, status: 200, data: responseData });
   } catch (error) {
     createError(500, String(error));
-    return response({res, status: 500, message: String(error)});
+    return response({ res, status: 500, message: String(error) });
   }
 };
 
 export const createPost = async (req: AuthRequest, res: Response) => {
   User.sync();
-  const userId = req.user?.id;
-  if (!req.body.description && !req.body.image_url) {
+  Post.sync();
+  if (!req.body.description && !req.body.imageUrl) {
     createError(500, "Please enter content or add image.");
-    return response({res, status: 500, message: "Please enter content or add image."});
+    return response({ res, status: 500, message: "Please enter content or add image." });
   }
   try {
+    const userId = Number(req.user?.id);
     const postData = {
-      userId,
-      image_url: req.body.image_url,
-      image_text: req.body.image_text,
-      rich_description: req.body.rich_description,
+      userId: userId,
+      imageUrl: req.body.imageUrl,
+      imageText: req.body.imageText,
+      richDescription: req.body.richDescription,
       description: req.body.description,
       comments: []
-    };
+    } as unknown as Post;
 
     const createdPost = await Post.create(postData);
     if (!createdPost) {
       createError(500, 'Unable to create Post!');
-      return response({res, status: 500, message: "Unable to create Post!"});
-    } 
+      return response({ res, status: 500, message: "Unable to create Post!" });
+    }
 
     const user = await User.findOne({
       where: { id: userId },
@@ -79,39 +87,45 @@ export const createPost = async (req: AuthRequest, res: Response) => {
     });
 
     const postWithUserInfo = {
-      ...createdPost._doc,
+      ...createdPost.dataValues,
       creator: user,
     };
     // TODO: to start a background job here - fanout
     return response({ res, data: postWithUserInfo, status: 201, message: "Post created successfully" });
   } catch (error) {
     createError(500, error);
-    return response({res, status: 500, message: "Unable to create Post!"});
+    return response({ res, status: 500, message: "Unable to create Post!" });
   }
 };
 
 export const updatePost = async (req: AuthRequest, res: Response) => {
   User.sync();
-  const userId = req.user?.id;
-  if (!req.body.description && !req.body.image_url && !req.body.comments) {
+  Post.sync();
+  
+  if (!req.body.description && !req.body.imageUrl && !req.body.comments) {
     createError(500, "Please enter some updated content in body.");
-    return response({res, status: 500, message: "Please enter some updated content in body."});
+    return response({ res, status: 500, message: "Please enter some updated content in body." });
   }
   try {
+    const userId = Number(req.user?.id);
     const postId = req.params.id;
 
     const updatedData = {
-      image_url: req.body.image_url,
-      image_text: req.body.image_text,
-      rich_description: req.body.rich_description,
+      imageUrl: req.body.imageUrl,
+      imageText: req.body.imageText,
+      richDescription: req.body.richDescription,
       description: req.body.description,
       comments: req.body.comments
     };
 
-    const updatedPost = await Post.findByIdAndUpdate({_id: postId, userId}, updatedData, { new: true });
-    if (!updatedPost) {
-      createError(500, 'Post not found.');
-      return response({res, status: 500, message: "Post not found."});
+    const [postRowsUpdated, [updatedPost]] = await Post.update(updatedData, {
+      where: { id: postId, userId: userId },
+      returning: true
+    });
+
+    if (postRowsUpdated === 0 || !updatedPost) {
+      createError(500, 'Post not found or user is not authorized to update');
+      return response({ res, status: 500, message: "Post not found or user is not authorized to update" });
     }
 
     const user = await User.findOne({
@@ -120,33 +134,44 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
     });
 
     const postWithUserInfo = {
-      ...updatedPost._doc,
+      ...updatedPost,
       creator: user,
     };
     return response({ res, data: postWithUserInfo, status: 200, message: "Post updated successfully" });
   } catch (error) {
     createError(500, error);
-    return response({res, status: 500, message: String(error)});
+    return response({ res, status: 500, message: String(error) });
   }
 };
 
 export const deletePost = async (req: AuthRequest, res: Response) => {
-  const userId = req.user?.id;
+  Post.sync();
+  Post.sync();
+  Comment.sync();
   try {
+    const userId = Number(req.user?.id);
     const postId = req.params.id;
 
-    // Use the Post model to find and delete the post by ID
-    const deletedPost = await Post.findByIdAndDelete({_id: postId, userId});
-    if (!deletedPost) {
-      createError(500, 'Post not found.');
-      return response({res, status: 500, message: "Post not found."});
+    const postsDeleted = await Post.destroy({
+      where: { id: postId, userId: userId }
+    });
+    if (postsDeleted === 0) {
+      createError(500, 'Post not found or user is not authorized to delete');
+      return response({ res, status: 500, message: "Post not found or user is not authorized to delete" });
     }
 
-    await Comment.deleteMany({ postId });
+    const commentsDeleted = await Comment.destroy({
+      where: { postId: postId }
+    });
+    if (commentsDeleted === 0) {
+      createError(500, 'No comments found for the specified postId');
+      return response({ res, status: 500, message: "No comments found for the specified postId" });
+    }
+
     return response({ res, status: 204, message: "Post deleted successfully" });
   } catch (error) {
     createError(500, error);
-    return response({res, status: 500, message: String(error)});
+    return response({ res, status: 500, message: String(error) });
   }
 
 };
