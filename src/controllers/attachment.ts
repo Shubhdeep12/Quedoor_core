@@ -8,7 +8,7 @@ import deleteFile from "../utils/deleteFile";
 
 
 export const uploadAttachment = async (req: AuthRequest, res: Response) => {
-  const { with_image_text = "true" } = req.body;
+  const { with_imageText = "true" } = req.body;
   try {
     // Check file size
     const fileSizeLimit = 10 * 1024 * 1024; // 10MB
@@ -27,11 +27,11 @@ export const uploadAttachment = async (req: AuthRequest, res: Response) => {
     // Upload image to Cloudinary
     const result = await uploadFile(req.file.buffer);
 
-    let image_text: String = "";
-    if(with_image_text === 'true') image_text = await getImageText(result.secure_url);
-    // console.log(image_text);
+    let imageText: String = "";
+    if(with_imageText === 'true') imageText = await getImageText(result.secure_url);
+    // console.log(imageText);
   
-    return response({ res, data: { image_url: result.secure_url, image_text } });
+    return response({ res, data: { imageUrl: result.secure_url, imageText } });
   } catch (error) {
     createError(500, String(error));
     return response({ res, status: 500, message: 'Server error' });
@@ -40,9 +40,9 @@ export const uploadAttachment = async (req: AuthRequest, res: Response) => {
 };
 
 export const deleteAttachment = async (req: AuthRequest, res: Response) => {
-  const {image_url :image_url} = req.query;
+  const {imageUrl :imageUrl} = req.query;
   try {
-    await deleteFile(String(image_url));
+    await deleteFile(String(imageUrl));
     
     return response({ res, message: 'File deleted successfully'});
   } catch (error) {

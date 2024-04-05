@@ -2,10 +2,10 @@ import { v2 as cloudinary } from 'cloudinary';
 
 import createError from './httpError';
 
-const deleteFile = async (image_url: String) => {
+const deleteFile = async (imageUrl: String) => {
   try {
     const regexPattern = /\/v\d+\/([^/]+)\./;
-    const match = image_url.match(regexPattern);
+    const match = imageUrl.match(regexPattern);
 
     if (match && match[1]) {
       const publicId = match[1];

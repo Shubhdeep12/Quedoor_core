@@ -1,5 +1,4 @@
 import { Sequelize } from 'sequelize';
-// import fs from 'fs';
 
 import { selfSignedCertificate, node_env, postgres_db, postgres_host, postgres_password, postgres_port, postgres_user } from '../config';
 

@@ -6,20 +6,19 @@ import jwt from "jsonwebtoken";
 import response from "../utils/response";
 
 import createError from "../utils/httpError";
-import User from "../models/users";
+import {User} from "../models/user";
 import { jwt_key } from "../config/config";
-import { getNeo4jDriver } from "../config/db/neo4j";
 import { AuthRequest } from "../entities/auth.entity";
 
 export const register = async (req: Request, res: Response) => {
   User.sync();
-  let user: any;
+  let existingUser: any;
   if (!req.body.name || !req.body.email || !req.body.password) {
     createError(500, "Please enter name, email and password.");
     return response({res, status: 500, message: "Please enter name, email and password."});
   }
   try {
-    user = await User.findAll({where: {
+    existingUser = await User.findAll({where: {
       email: req.body.email
     }});
   } catch (error) {
@@ -27,23 +26,15 @@ export const register = async (req: Request, res: Response) => {
     return response({res, status: 404, message: 'Not able to register, Please try again!'});
   }
  
-  if (user?.length) {
+  if (existingUser?.length) {
     createError(409, "User already exists.");
     return response({ res, status: 409, message: "User already exists." });
   }      
 
   const salt = bcrypt.genSaltSync(10);
   const hashedPassword = bcrypt.hashSync(req.body.password, salt);
-  let newUser: any;
   try {
-    newUser = await User.create({ email: req.body.email, password: hashedPassword, name: req.body.name });
-    if (newUser) {
-      const userId = newUser.dataValues.id;
-      const session = getNeo4jDriver().session();
-      await session.run(
-        `CREATE (user:User { user_id: ${userId}})`
-      );
-    }
+    await User.create({ email: req.body.email, password: hashedPassword, name: req.body.name } as User);
   } catch (error) {
     createError(500, error);
     return response({res, status: 500, message: 'Not able to create user, Please try again!'});

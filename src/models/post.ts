@@ -1,8 +1,9 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { Post } from './post';
+import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
+import { Comment } from './comment';
+import {User} from './user';
 
-@Table({ tableName: 'comments', timestamps: false })
-export class Comment extends Model<Comment> {
+@Table({ tableName: 'posts', timestamps: false })
+export class Post extends Model<Post> {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
@@ -13,15 +14,9 @@ export class Comment extends Model<Comment> {
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
+    references: { model: User, key: 'id' }
   })
-    userId!: Number;
-
-  @ForeignKey(() => Post)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-    postId!: number;
+    userId!: number;
 
   @Column({
     type: DataType.STRING,
@@ -48,6 +43,15 @@ export class Comment extends Model<Comment> {
     imageText!: string;
 
   @Column({
+    type: DataType.ARRAY(DataType.INTEGER),
+    allowNull: true,
+  })
+    reactions!: number[];
+
+  @HasMany(() => Comment)
+    comments!: Comment[];
+
+  @Column({
     type: DataType.DATE,
     defaultValue: DataType.NOW,
     allowNull: false,
@@ -60,7 +64,4 @@ export class Comment extends Model<Comment> {
     allowNull: false,
   })
     updatedAt!: Date;
-  
-    @BelongsTo(() => Post)
-      post!: Post;
 }

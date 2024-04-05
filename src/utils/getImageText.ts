@@ -2,11 +2,11 @@ import Tesseract from 'tesseract.js';
 
 import logger from '../middlewares/logger';
 
-const getImageText = async (image_url: string | Buffer) => {
+const getImageText = async (imageUrl: string | Buffer) => {
   const worker = await Tesseract.createWorker('eng');
   let result: any;
   try {
-    result = await worker.recognize(image_url);
+    result = await worker.recognize(imageUrl);
     return result.data.text;
 
   } catch (error) {

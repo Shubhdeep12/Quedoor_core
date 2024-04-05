@@ -1,43 +1,39 @@
-import logger from "../middlewares/logger";
-import { getNeo4jDriver } from "../config/db/neo4j";
+import { ForeignKeyConstraintError } from 'sequelize';
+import logger from '../middlewares/logger';
 
-const unfollowUser = async (followerId: Number, followingId: Number) => {
-  const session = getNeo4jDriver().session();
+import postgresConnection from '../config/db/sequelize';
+import { Relationship } from '../models/relationship';
+
+const unfollowUser = async (followerId: number, followingId: number): Promise<void> => {
+  Relationship.sync();
+  let transaction;
   try {
-    const result = await session.run(
-      'MATCH (follower:User {user_id: $followerId})-[rel:FOLLOWS]->(following:User {user_id: $followingId}) ' +
-      'DELETE rel ' +
-      'RETURN follower, following',
-      { followerId, followingId }
-    );
-  
-    // Check if the relationship was deleted
-    if (result.records.length === 0) {
+    transaction = await postgresConnection.transaction();
+
+    const deletedRelationship = await Relationship.destroy({
+      where: {
+        followerId,
+        followingId,
+      },
+      transaction,
+    });
+
+    if (deletedRelationship === 0) {
       throw new Error('Relationship does not exist');
     }
-  
-    const deletedRelationship = result.records[0];
-  
-    // Access the follower and following nodes
-    const followerNode = deletedRelationship.get('follower');
-    const followingNode = deletedRelationship.get('following');
-  
-    // Handle the nodes as needed
-  
-    logger.info('Relationship deleted successfully:', followerNode.properties, followingNode.properties);
+
+    await transaction.commit();
+
+    logger.info('Relationship deleted successfully');
   } catch (error: any) {
-    if (error.message.includes('Relationship does not exist')) {
-      throw new Error('Relationship does not exist between the users');
-    } else if (error.message.includes('Node not found')) {
+    if (transaction) await transaction.rollback();
+
+    if (error instanceof ForeignKeyConstraintError) {
       throw new Error('One or both users do not exist');
     } else {
-      throw new Error('Error:', error.message);
+      throw new Error(`Error: ${error.message}`);
     }
-  } finally {
-    // Always close the session
-    session.close();
   }
-  
 };
 
 export default unfollowUser;

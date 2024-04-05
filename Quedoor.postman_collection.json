@@ -16,7 +16,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"Shubhdeep Chhabra\",\n    \"email\": \"email@email.com\",\n    \"password\": \"securePassword\",\n    \"city\": \"city name\",\n    \"website\": \"https://shubhdeepchhabra.in\",\n    \"profile_img\": \"profile-image-url\"\n}",
+              "raw": "{\n    \"name\": \"Shubhdeep Chhabra\",\n    \"email\": \"email@email.com\",\n    \"password\": \"securePassword\",\n    \"city\": \"city name\",\n    \"website\": \"https://shubhdeepchhabra.in\",\n    \"profileImg\": \"profile-image-url\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -115,7 +115,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"updated name\",\n    \"city\": \"updated city\",\n    \"website\": \"updated website\",\n    \"profile_img\": \"updated profile Image\"\n}",
+              "raw": "{\n    \"name\": \"updated name\",\n    \"city\": \"updated city\",\n    \"website\": \"updated website\",\n    \"profileImg\": \"updated profile Image\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -190,7 +190,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"follower_id\": \"1\",\n    \"following_id\": \"2\"\n}",
+              "raw": "{\n    \"followerId\": \"1\",\n    \"followingId\": \"2\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -215,7 +215,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"follower_id\": \"1\",\n    \"following_id\": \"2\"\n}",
+              "raw": "{\n    \"followerId\": \"1\",\n    \"followingId\": \"2\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -261,7 +261,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"image_url\": \"\",\n    \"image_text\": \"\",\n    \"rich_description\": \"\",\n    \"description\": \"\"\n}",
+              "raw": "{\n    \"imageUrl\": \"\",\n    \"imageText\": \"\",\n    \"richDescription\": \"\",\n    \"description\": \"\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -286,7 +286,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"image_url\": \"\",\n    \"image_text\": \"\",\n    \"rich_description\": \"\",\n    \"description\": \"\"\n}",
+              "raw": "{\n    \"imageUrl\": \"\",\n    \"imageText\": \"\",\n    \"richDescription\": \"\",\n    \"description\": \"\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -406,7 +406,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"userId\": \"1\",\n    \"postId\": \"12121\",\n    \"image_url\": \"\",\n    \"image_text\": \"\",\n    \"rich_description\": \"\",\n    \"description\": \"\"\n}",
+              "raw": "{\n    \"userId\": \"1\",\n    \"postId\": \"12121\",\n    \"imageUrl\": \"\",\n    \"imageText\": \"\",\n    \"richDescription\": \"\",\n    \"description\": \"\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -437,7 +437,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"image_url\": \"\",\n    \"image_text\": \"\",\n    \"rich_description\": \"\",\n    \"description\": \"\"\n}",
+              "raw": "{\n    \"imageUrl\": \"\",\n    \"imageText\": \"\",\n    \"richDescription\": \"\",\n    \"description\": \"\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -518,7 +518,7 @@
                   "src": "zDBVccwxr/Screenshot from 2023-10-05 13-27-56.png"
                 },
                 {
-                  "key": "with_image_text",
+                  "key": "with_imageText",
                   "value": "true",
                   "type": "text",
                   "disabled": true
@@ -550,7 +550,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"image_url\": \"\"\n}",
+              "raw": "{\n    \"imageUrl\": \"\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
