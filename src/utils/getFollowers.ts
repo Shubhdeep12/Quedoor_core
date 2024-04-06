@@ -1,7 +1,6 @@
 import {Relationship} from "../models/relationship";
 
 const getFollowers = async (userId: number): Promise<number[]> => {
-  Relationship.sync();
   try {
     const followers = await Relationship.findAll({
       where: {

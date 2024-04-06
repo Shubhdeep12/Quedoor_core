@@ -11,7 +11,6 @@ import { jwt_key } from "../config/config";
 import { AuthRequest } from "../entities/auth.entity";
 
 export const register = async (req: Request, res: Response) => {
-  User.sync();
   let existingUser: any;
   if (!req.body.name || !req.body.email || !req.body.password) {
     createError(500, "Please enter name, email and password.");
@@ -43,7 +42,6 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const logIn = async (req: Request, res: Response) => {
-  User.sync();
   let user: any;
   if (!req.body.email || !req.body.password) {
     createError(500, "Please enter email and password.");

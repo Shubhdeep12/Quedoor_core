@@ -10,9 +10,6 @@ import { Post } from "../models/post";
 import { Comment } from "../models/comment";
 
 export const getComments = async (req: AuthRequest, res: Response) => {
-  User.sync();
-  Post.sync();
-  Comment.sync();
   try {
     const postId = Number(req.params?.postId);
     const { limit = 10, page = 1 }: any = req.query;
@@ -25,7 +22,7 @@ export const getComments = async (req: AuthRequest, res: Response) => {
     }
     const comments = await Comment.findAll({
       where: { postId },
-      order: [['created_at', 'DESC']],
+      order: [['createdAt', 'DESC']],
       limit: Number(limit),
       offset: skip,
     });
@@ -45,9 +42,6 @@ export const getComments = async (req: AuthRequest, res: Response) => {
 };
 
 export const createComment = async (req: AuthRequest, res: Response) => {
-  User.sync();
-  Post.sync();
-  Comment.sync();
   const userId = Number(req.user?.id);
   const postId = Number(req.params?.postId);
   if (!req.body.description && !req.body.imageUrl) {
@@ -90,7 +84,6 @@ export const createComment = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateComment = async (req: AuthRequest, res: Response) => {
-  User.sync();
   const userId = Number(req.user?.id);
   if (!req.body.description && !req.body.imageUrl) {
     createError(500, "Please enter some updated content in body.");

@@ -10,8 +10,6 @@ import getFollowing from "../utils/getFollowing";
 import { Op } from "sequelize";
 
 export const getPosts = async (req: AuthRequest, res: Response) => {
-  User.sync();
-  Post.sync();
   try {
     const userId = Number(req.user?.id);
     const { limit = 10, page = 1 }: any = req.query;
@@ -27,7 +25,7 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
     const [posts, totalRecords] = await Promise.all([
       Post.findAll({
         where: filter,
-        order: [['created_at', 'DESC']],
+        order: [['createdAt', 'DESC']],
         limit: limit,
         offset: skip,
       }),
@@ -58,8 +56,7 @@ export const getPosts = async (req: AuthRequest, res: Response) => {
 };
 
 export const createPost = async (req: AuthRequest, res: Response) => {
-  User.sync();
-  Post.sync();
+
   if (!req.body.description && !req.body.imageUrl) {
     createError(500, "Please enter content or add image.");
     return response({ res, status: 500, message: "Please enter content or add image." });
@@ -98,10 +95,7 @@ export const createPost = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updatePost = async (req: AuthRequest, res: Response) => {
-  User.sync();
-  Post.sync();
-  
+export const updatePost = async (req: AuthRequest, res: Response) => {  
   if (!req.body.description && !req.body.imageUrl && !req.body.comments) {
     createError(500, "Please enter some updated content in body.");
     return response({ res, status: 500, message: "Please enter some updated content in body." });
@@ -145,9 +139,6 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
 };
 
 export const deletePost = async (req: AuthRequest, res: Response) => {
-  Post.sync();
-  Post.sync();
-  Comment.sync();
   try {
     const userId = Number(req.user?.id);
     const postId = req.params.id;

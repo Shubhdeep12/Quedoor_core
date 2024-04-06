@@ -8,7 +8,6 @@ import {User} from "../models/user";
 
 export const getMe = async (req: AuthRequest, res: Response) => {
   const _token = req.params.token;
-  User.sync();
 
   let _user: any;
 

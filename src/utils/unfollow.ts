@@ -5,7 +5,6 @@ import postgresConnection from '../config/db/sequelize';
 import { Relationship } from '../models/relationship';
 
 const unfollowUser = async (followerId: number, followingId: number): Promise<void> => {
-  Relationship.sync();
   let transaction;
   try {
     transaction = await postgresConnection.transaction();
