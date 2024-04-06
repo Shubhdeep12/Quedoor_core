@@ -33,7 +33,7 @@ export const uploadAttachment = async (req: AuthRequest, res: Response) => {
   
     return response({ res, data: { imageUrl: result.secure_url, imageText } });
   } catch (error) {
-    createError(500, String(error));
+    createError(500, error);
     return response({ res, status: 500, message: 'Server error' });
    
   }

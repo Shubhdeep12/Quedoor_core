@@ -1,6 +1,10 @@
-import { Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 
 import { selfSignedCertificate, node_env, postgres_db, postgres_host, postgres_password, postgres_port, postgres_user } from '../config';
+import { User } from '../../models/user';
+import { Post } from '../../models/post';
+import { Relationship } from '../../models/relationship';
+import { Comment } from '../../models/comment';
 
 const postgresConnection= new Sequelize({
   dialect: "postgres",
@@ -16,5 +20,7 @@ const postgresConnection= new Sequelize({
     },
   }} : {})
 });
+
+postgresConnection.addModels([User, Relationship, Post, Comment]);
 
 export default postgresConnection;

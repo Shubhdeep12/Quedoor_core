@@ -3,7 +3,6 @@ import { ForeignKeyConstraintError } from 'sequelize';
 import {Relationship} from '../models/relationship';
 
 const followUser = async (followerId: number, followingId: number): Promise<any> => {
-  Relationship.sync();
   try {
     const existingRelationship = await Relationship.findOne({
       where: {

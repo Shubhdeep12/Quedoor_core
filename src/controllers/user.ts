@@ -12,7 +12,6 @@ import followUser from "../utils/follow";
 import unfollowUser from "../utils/unfollow";
 
 export const getAllUsers = async (req: AuthRequest, res: Response) => {
-  User.sync();
   const { limit = 10, page = 1 }: any = req.query;
   try {
     const skip = (page - 1) * limit;
@@ -49,7 +48,6 @@ export const getAllUsers = async (req: AuthRequest, res: Response) => {
 };
 
 export const getUser = async (req: Request, res: Response) => {
-  User.sync();
   let user;
   try {
     const userId = Number(req.params?.userId);
@@ -73,7 +71,6 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: AuthRequest, res: Response) => {
-  User.sync();
   const userId = Number(req.user?.id);
   if (Number(userId) !== Number(req.params.userId)) {
     createError(401, "You are not authorized to update this user");
@@ -111,7 +108,6 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
 };
 
 export const getAllFollowers = async (req: AuthRequest, res: Response) => {
-  User.sync();
   const userId = Number(req.user?.id);
   const { limit = 10, page = 1 }: any = req.query;
   try {
@@ -145,8 +141,6 @@ export const getAllFollowers = async (req: AuthRequest, res: Response) => {
 };
 
 export const getAllFollowing = async (req: AuthRequest, res: Response) => {
-  User.sync();
-  
   try {
     const userId = Number(req.params.userId);
     const { limit = 10, page = 1 }: any = req.query;
